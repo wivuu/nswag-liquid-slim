@@ -1,0 +1,2390 @@
+﻿{
+  "x-generator": "NSwag v13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))",
+  "swagger": "2.0",
+  "info": {
+    "title": "C2C Partner Web",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/User/Login": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Log user into the system",
+        "operationId": "Account_Login",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserProfileViewModel"
+            }
+          },
+          "401": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/Logout": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Log user out",
+        "operationId": "Account_Logout",
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/SendReset": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Request a password reset token sent via email",
+        "operationId": "Account_SendReset",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ForgotPasswordViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/ResetPassword/{email}": {
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Reset account password given a valid reset code",
+        "operationId": "Account_ResetPassword",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "code",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "name": "reset",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordResetViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserProfileViewModel"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/ViewInvite/{code}": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Check if invitation valid/exists",
+        "operationId": "Account_ViewInvite",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ViewInviteViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/AcceptInvite/{code}": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Accept an invitation to create a user account",
+        "operationId": "Account_AcceptInvite",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Password",
+            "in": "formData",
+            "required": true,
+            "maxLength": 100,
+            "minLength": 8,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "ConfirmPassword",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "AccountExists",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Email",
+            "in": "formData",
+            "required": true,
+            "format": "email",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "FirstName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "LastName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Title",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Phone",
+            "in": "formData",
+            "required": true,
+            "format": "phone",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Image.Url",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "file",
+            "name": "Image.ImageData",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "AboutMe",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "CustomQuote",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/Profile": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Retrieve user's profile information",
+        "operationId": "Account_GetProfile",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserProfileViewModel"
+            }
+          },
+          "401": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Update user profile",
+        "operationId": "Account_PutProfile",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Email",
+            "in": "formData",
+            "required": true,
+            "format": "email",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "FirstName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "LastName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Title",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Phone",
+            "in": "formData",
+            "required": true,
+            "format": "phone",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Image.Url",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "file",
+            "name": "Image.ImageData",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "AboutMe",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "CustomQuote",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/ChangePassword": {
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Change user password",
+        "operationId": "Account_ChangePassword",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "input",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordChangeViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/User/Ping": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Ping to test if user still logged in",
+        "operationId": "Account_Ping",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "x-nullable": false,
+            "description": "Session has ended",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Leads": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Retrieve leads by date; filtered, sorted, and paged",
+        "operationId": "Leads_FindLeads",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "start",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "end",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "SortBy",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "IncludeCount",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "SortDirection",
+            "in": "query",
+            "x-schema": {
+              "$ref": "#/definitions/SortDirection"
+            },
+            "x-nullable": false,
+            "enum": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "integer",
+            "name": "Page",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/GridDataOfLeadViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Leads/WithStatistics": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Retrieve leads by date with statistics; filtered, sorted, and paged",
+        "operationId": "Leads_FindLeadsWithStatistics",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "start",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "end",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "SortBy",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "IncludeCount",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "SortDirection",
+            "in": "query",
+            "x-schema": {
+              "$ref": "#/definitions/SortDirection"
+            },
+            "x-nullable": false,
+            "enum": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "integer",
+            "name": "Page",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/GridDataOfLeadWithStatsViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Leads/{id}": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Retrieve lead by id",
+        "operationId": "Leads_GetLead",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LeadDetailViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/Geography": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Retrieve all areas within input state",
+        "operationId": "Lookup_GeographyPickerAreas",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "state",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/GeographicAreaSelectionViewModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/MapKey": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Retrieve map key",
+        "operationId": "Lookup_MapKey",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/MapCredentials": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Retrieve Map credentials",
+        "operationId": "Lookup_MapCredentials",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/CdnRoot": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Retrieve CDN Root",
+        "operationId": "Lookup_CdnRoot",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/Insights": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Retrieve app insights key",
+        "operationId": "Lookup_Insights",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/Recaptcha": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Retrieve recaptcha public key",
+        "operationId": "Lookup_Recaptcha",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/Zip": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Validate whether input zipcode is valid",
+        "operationId": "Lookup_ValidateZip",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "code",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "/api/Lookup/Amount": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "summary": "Validate whether requested amount is available",
+        "operationId": "Lookup_LoanAmount",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "number",
+            "name": "amount",
+            "in": "query",
+            "format": "decimal",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Statistics/Leads/WithReferralInfo": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Retrieve snapshot of every lead in the selected date range with the\nlatest status of the lead in the date range",
+        "operationId": "Statistics_LeadsWithReferralInfo",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "start",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "end",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LeadWithReferralInfo"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Statistics/Leads/WithLocationInfo": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Retrieve snapshot of every lead in the selected date range with the\nlatest status of the lead in the date range as GEOJSON",
+        "operationId": "Statistics_LeadsWithLocationInfo",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "start",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "end",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/GeoJsonFeatureCollection"
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Statistics/Leads/Summary": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Retrieve lead snapshots within the specified date range summarized\nby day and status",
+        "operationId": "Statistics_LeadsSummary",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "start",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "end",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "request",
+            "in": "query",
+            "x-schema": {
+              "$ref": "#/definitions/LeadsSummaryType"
+            },
+            "x-nullable": false,
+            "enum": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LeadSummary"
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Statistics/Products/WithLocationInfo": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Retrieve product associated with input partner with its geographic state and area prefix",
+        "operationId": "Statistics_ProductsWithLocationInfo",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ProductAndLocation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Statistics/Referrers/WithLocationInfo": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Retrieve referral partners with their geographic coverage area",
+        "operationId": "Statistics_ReferrersWithLocationInfo",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Retrieve users; filtered, sorted, and paged",
+        "operationId": "Users_Find",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "SortBy",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "IncludeCount",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "SortDirection",
+            "in": "query",
+            "x-schema": {
+              "$ref": "#/definitions/SortDirection"
+            },
+            "x-nullable": false,
+            "enum": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "integer",
+            "name": "Page",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/GridDataOfUserViewModel"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Updates a single user",
+        "operationId": "Users_Edit",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "form",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserViewModel"
+            },
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "404": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/{partner}/Users/SendInvite": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Send an invitation to a user",
+        "operationId": "Users_SendInvite",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "invite",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InviteUserViewModel"
+            },
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "partner",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "UserProfileViewModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "email",
+        "firstName",
+        "lastName",
+        "title",
+        "phone",
+        "image"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "firstName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lastName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phone": {
+          "type": "string",
+          "format": "phone",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/definitions/ImageViewModel"
+        },
+        "aboutMe": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 0
+        },
+        "customQuote": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 0
+        }
+      }
+    },
+    "ImageViewModel": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "imageData": {
+          "type": "file"
+        }
+      }
+    },
+    "ProblemDetails": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "instance": {
+          "type": "string"
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      }
+    },
+    "ValidationProblemDetails": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ProblemDetails"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "LoginViewModel": {
+      "type": "object",
+      "example": {
+        "username": "test@crfusa.com",
+        "password": "Password1"
+      },
+      "required": [
+        "username",
+        "password",
+        "recaptchaToken"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recaptchaToken": {
+          "type": "string"
+        }
+      }
+    },
+    "ForgotPasswordViewModel": {
+      "type": "object",
+      "example": {
+        "email": "test@crfusa.com"
+      },
+      "required": [
+        "email",
+        "recaptchaToken"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "recaptchaToken": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetViewModel": {
+      "type": "object",
+      "required": [
+        "password",
+        "confirmPassword"
+      ],
+      "properties": {
+        "password": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 6
+        },
+        "confirmPassword": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ViewInviteViewModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/UserProfileViewModel"
+        },
+        {
+          "type": "object",
+          "required": [
+            "password",
+            "confirmPassword",
+            "accountExists"
+          ],
+          "properties": {
+            "password": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 8
+            },
+            "confirmPassword": {
+              "type": "string",
+              "minLength": 1
+            },
+            "accountExists": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "PasswordChangeViewModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PasswordResetViewModel"
+        },
+        {
+          "type": "object",
+          "required": [
+            "currentPassword"
+          ],
+          "properties": {
+            "currentPassword": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "GridDataOfLeadViewModel": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LeadViewModel"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "LeadViewModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "status",
+        "dateCreated",
+        "statusDate",
+        "amount"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "status": {
+          "$ref": "#/definitions/LoanStatus"
+        },
+        "dateCreated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "statusDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "nameOfBusiness": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "decimal"
+        },
+        "useOfProceeds": {
+          "type": "string"
+        },
+        "leadSource": {
+          "type": "string"
+        },
+        "referredTo": {
+          "type": "string"
+        },
+        "referralCode": {
+          "type": "string"
+        }
+      }
+    },
+    "LoanStatus": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Referred",
+        "Unmatched",
+        "Matched",
+        "Reviewed",
+        "Contacted",
+        "Qualified",
+        "Funded",
+        "Disqualified",
+        "Abandoned"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        8,
+        10,
+        20,
+        30
+      ]
+    },
+    "SortDirection": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Asc",
+        "Desc"
+      ],
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "GridDataOfLeadWithStatsViewModel": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LeadWithStatsViewModel"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "LeadWithStatsViewModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/LeadViewModel"
+        },
+        {
+          "type": "object",
+          "required": [
+            "requestedAmount",
+            "businessType",
+            "yearsInBusiness",
+            "priorBankruptcies",
+            "revenueLastYear",
+            "revenueProjected",
+            "collateralTypes",
+            "ownershipDemographicTypes"
+          ],
+          "properties": {
+            "requestedAmount": {
+              "type": "number",
+              "format": "decimal"
+            },
+            "businessType": {
+              "$ref": "#/definitions/SingleBusinessType"
+            },
+            "industry": {
+              "type": "string"
+            },
+            "yearsInBusiness": {
+              "$ref": "#/definitions/SingleYearsInBusiness"
+            },
+            "numEmployees": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "priorBankruptcies": {
+              "$ref": "#/definitions/SinglePriorBankruptcies"
+            },
+            "revenueLastYear": {
+              "$ref": "#/definitions/GrossRevenue"
+            },
+            "revenueProjected": {
+              "$ref": "#/definitions/GrossRevenue"
+            },
+            "netProfit": {
+              "type": "number",
+              "format": "decimal"
+            },
+            "hasBusinessPlan": {
+              "type": "boolean"
+            },
+            "collateralTypes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "statistics": {
+              "$ref": "#/definitions/StatisticsViewModel"
+            },
+            "businessAddress": {
+              "$ref": "#/definitions/AddressViewModel"
+            },
+            "matchedProduct_Name": {
+              "type": "string"
+            },
+            "leadOwner": {
+              "type": "string"
+            },
+            "ownershipDemographicTypes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "SingleBusinessType": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "SoleProprietorship",
+        "LLC",
+        "Corporation",
+        "NonProfit",
+        "Other"
+      ],
+      "enum": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ]
+    },
+    "SingleYearsInBusiness": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Startup",
+        "LessThanOne",
+        "OneToTwo",
+        "TwoToThree",
+        "ThreeOrMore"
+      ],
+      "enum": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ]
+    },
+    "SinglePriorBankruptcies": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "None",
+        "_1Prior",
+        "_2OrMore"
+      ],
+      "enum": [
+        1,
+        2,
+        4
+      ]
+    },
+    "GrossRevenue": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "LessThan100000",
+        "_100000To250000",
+        "_250000To500000",
+        "_500000To1000000",
+        "_1000000To5000000",
+        "MoreThan5000000"
+      ],
+      "enum": [
+        99999,
+        250000,
+        500000,
+        1000000,
+        5000000,
+        5000001
+      ]
+    },
+    "StatisticsViewModel": {
+      "type": "object",
+      "properties": {
+        "censusTract": {
+          "type": "string"
+        },
+        "isCDFIInvestmentArea": {
+          "type": "boolean"
+        },
+        "craEligibleTract": {
+          "type": "boolean"
+        },
+        "povertyRateAverage": {
+          "type": "number",
+          "format": "decimal"
+        },
+        "unemploymentRate": {
+          "type": "number",
+          "format": "decimal"
+        }
+      }
+    },
+    "AddressViewModel": {
+      "type": "object",
+      "required": [
+        "line1",
+        "line2",
+        "city",
+        "state",
+        "zip"
+      ],
+      "properties": {
+        "line1": {
+          "title": "Address",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 0
+        },
+        "line2": {
+          "title": "Line 2",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 0
+        },
+        "city": {
+          "title": "City",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 0
+        },
+        "state": {
+          "title": "State",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 0
+        },
+        "zip": {
+          "title": "Zip",
+          "type": "string",
+          "maxLength": 5,
+          "minLength": 5,
+          "pattern": "^\\d{5}$"
+        }
+      }
+    },
+    "LeadDetailViewModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/LeadWithStatsViewModel"
+        },
+        {
+          "type": "object",
+          "required": [
+            "ficoScore",
+            "state"
+          ],
+          "properties": {
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "ficoScore": {
+              "$ref": "#/definitions/SingleCreditScores"
+            },
+            "financedNeededBy": {
+              "$ref": "#/definitions/FinanceTimeline"
+            },
+            "businessOwner": {
+              "type": "string"
+            },
+            "howDidYouHear": {
+              "$ref": "#/definitions/HowDidYouHear"
+            },
+            "preferredContactTime": {
+              "$ref": "#/definitions/PreferredContactTime"
+            },
+            "preferredContactMethod": {
+              "$ref": "#/definitions/PreferredContactMethod"
+            },
+            "hasDiverseOwnership": {
+              "type": "boolean"
+            },
+            "state": {
+              "$ref": "#/definitions/LoanState"
+            }
+          }
+        }
+      ]
+    },
+    "SingleCreditScores": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "_700Plus",
+        "_660To699",
+        "_640To659",
+        "_620To639",
+        "_580To619",
+        "Below580"
+      ],
+      "enum": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    "FinanceTimeline": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Today",
+        "InNextTwoWeeks",
+        "InNextTwoMonths",
+        "MultipleOptions"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "HowDidYouHear": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Google",
+        "Facebook",
+        "Ad",
+        "Email",
+        "Event",
+        "WordOMouth",
+        "LenderReferral",
+        "Other"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "PreferredContactTime": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Morning",
+        "Afternoon",
+        "Evening"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "PreferredContactMethod": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Email",
+        "Phone"
+      ],
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "LoanState": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "InProgress",
+        "Submitted",
+        "Removed"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "GeographicAreaSelectionViewModel": {
+      "type": "object",
+      "required": [
+        "areaName",
+        "state"
+      ],
+      "properties": {
+        "areaName": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        }
+      }
+    },
+    "LeadWithReferralInfo": {
+      "type": "object",
+      "required": [
+        "status",
+        "requestedAmount"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/LoanStatus"
+        },
+        "requestedAmount": {
+          "type": "number",
+          "format": "decimal"
+        },
+        "referredBy": {
+          "type": "string"
+        },
+        "referredTo": {
+          "type": "string"
+        }
+      }
+    },
+    "GeoJsonFeatureCollection": {
+      "type": "object"
+    },
+    "LeadSummary": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LeadSummaryByDate"
+          }
+        },
+        "pipelineAverage": {
+          "$ref": "#/definitions/LeadPipelineAverage"
+        }
+      }
+    },
+    "LeadSummaryByDate": {
+      "type": "object",
+      "required": [
+        "date",
+        "pending",
+        "contacted",
+        "funded",
+        "disqualified"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pending": {
+          "type": "number",
+          "format": "decimal"
+        },
+        "contacted": {
+          "type": "number",
+          "format": "decimal"
+        },
+        "funded": {
+          "type": "number",
+          "format": "decimal"
+        },
+        "disqualified": {
+          "type": "number",
+          "format": "decimal"
+        }
+      }
+    },
+    "LeadPipelineAverage": {
+      "type": "object",
+      "properties": {
+        "averageDaysPending": {
+          "type": "number",
+          "format": "double"
+        },
+        "averageDaysContacted": {
+          "type": "number",
+          "format": "double"
+        },
+        "averageDaysFunded": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "LeadsSummaryType": {
+      "type": "integer",
+      "description": "",
+      "x-enumFlags": true,
+      "x-enumNames": [
+        "Summary",
+        "Average"
+      ],
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "ProductAndLocation": {
+      "type": "object",
+      "required": [
+        "name",
+        "lender",
+        "prefix"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "lender": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        }
+      }
+    },
+    "GridDataOfUserViewModel": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserViewModel"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "UserViewModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "phone",
+        "createdBy",
+        "dateCreated",
+        "image",
+        "roles",
+        "status",
+        "fullName",
+        "isActive"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "dateCreated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "image": {
+          "$ref": "#/definitions/ImageViewModel"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserRoleViewModel"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/UserStatus"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "selectedRole": {
+          "$ref": "#/definitions/RoleType"
+        },
+        "selectedRoleDisplay": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "boolean"
+        }
+      }
+    },
+    "UserRoleViewModel": {
+      "type": "object",
+      "required": [
+        "roleType",
+        "partner"
+      ],
+      "properties": {
+        "roleType": {
+          "$ref": "#/definitions/RoleType"
+        },
+        "partner": {
+          "type": "string"
+        }
+      }
+    },
+    "RoleType": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "PartnerUser",
+        "PartnerAdministrator",
+        "SystemAdministrator"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "UserStatus": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Inactive",
+        "Active"
+      ],
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "InviteUserViewModel": {
+      "type": "object",
+      "example": {
+        "email": "test.user@gmail.com",
+        "firstName": "John",
+        "lastName": "Smith",
+        "inviteAsAdmin": true
+      },
+      "required": [
+        "email",
+        "firstName",
+        "lastName",
+        "selectedRole"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 150,
+          "minLength": 1
+        },
+        "firstName": {
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 1
+        },
+        "lastName": {
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 1
+        },
+        "selectedRole": {
+          "title": "Selected Role",
+          "allOf": [
+            {
+              "$ref": "#/definitions/RoleType"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
