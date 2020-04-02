@@ -10,4 +10,8 @@
     <PackageReference Include="NSwag.CodeGeneration.TypeScript" Version="13.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\FetchClient.liquid" />
+  </ItemGroup>
+
 </Project>

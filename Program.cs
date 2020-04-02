@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using NSwag;
 using NSwag.CodeGeneration.TypeScript;
@@ -12,18 +11,16 @@ namespace nswag_test
         {
             var doc = await OpenApiDocument.FromFileAsync("./openapi.json");
 
-            // openapi2tsclient 
-
             var settings = new TypeScriptClientGeneratorSettings
             {
                 // ClientBaseClass = "RootApi",
                 UseGetBaseUrlMethod = true,
+                Template = TypeScriptTemplate.Fetch
             };
 
+            settings.TypeScriptGeneratorSettings.TemplateDirectory = "./Templates";
             settings.TypeScriptGeneratorSettings.TypeStyle = 
                 NJsonSchema.CodeGeneration.TypeScript.TypeScriptTypeStyle.Interface;
-
-            settings.TypeScriptGeneratorSettings.MarkOptionalProperties = true;
 
             var generator = new TypeScriptClientGenerator(doc, settings);
 
