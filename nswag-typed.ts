@@ -14,7 +14,7 @@ async function fetchPost(info: "/api/users", init: TypedRequestInit<AddUserModel
 /** IMPL of POST */
 function fetchPost(info: string, init?: TypedRequestInit) {
     return fetchInternal("POST", info, init, {
-        body: modelOrInit(init)
+        body: getModel(init)
     });
 }
 
@@ -25,7 +25,7 @@ async function fetchDelete(info: "/api/users", init: TypedRequestInit<DeleteUser
 /** IMPL of DELETE */
 function fetchDelete(info: string, init?: TypedRequestInit) {
     return fetchInternal("DELETE", info, init, {
-        qs: modelOrInit(init)
+        qs: getModel(init)
     });
 }
 
@@ -36,7 +36,7 @@ async function fetchGet(info: "/api/users", init?: TypedRequestInit<{ filter: st
 /** IMPL of GET */
 function fetchGet(info: string, init?: TypedRequestInit) {
     return fetchInternal("GET", info, init, {
-        qs: modelOrInit(init)
+        qs: getModel(init)
     });
 }
 
@@ -56,14 +56,14 @@ async function fetchInternal(method: string, info: string, init: RequestInit, in
 }
 
 /** Return 'model' or 'init' object, but if 'model' is inside 'init', removes 'model' property */
-function modelOrInit(init: { model?: any }) {
-    const modelInInit = "model" in init;
-    const model       = modelInInit ? init.model : init;
-    
-    if (modelInInit)
+function getModel(init: { model?: any }) {
+    if ("model" in init) {
+        const model = init.model;
         delete init.model;
+        return model;
+    }
 
-    return model;
+    return init;
 }
 
 /** Format params string, removing {template} values */
