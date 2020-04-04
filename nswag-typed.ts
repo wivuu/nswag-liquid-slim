@@ -7,42 +7,42 @@ const defaultRequestInfo : RequestInit = {
 
 
 /** Generated Add Post description goes here */
-async function fetchPost(info: "/api/posts", init: TypedRequestInit<AddPostModel>): Promise<AddPostReturnModel>;
+async function apiPost(info: "/api/posts", init: TypedRequestInit<AddPostModel>): Promise<AddPostReturnModel>;
 /** Generated Add User description goes here */
-async function fetchPost(info: "/api/users", init: TypedRequestInit<AddUserModel>): Promise<AddUserReturnModel>;
+async function apiPost(info: "/api/users", init: TypedRequestInit<AddUserModel>): Promise<AddUserReturnModel>;
 
 /** IMPL of POST */
-function fetchPost(info: string, init?: TypedRequestInit) {
-    return fetchInternal("POST", info, init, {
+function apiPost(info: string, init?: TypedRequestInit) {
+    return api("POST", info, init, {
         body: getModel(init)
     });
 }
 
 
 /** Delete a user */
-async function fetchDelete(info: "/api/users", init: TypedRequestInit<DeleteUserModel>): Promise<Response>;
+async function apiDelete(info: "/api/users", init: TypedRequestInit<DeleteUserModel>): Promise<Response>;
 
 /** IMPL of DELETE */
-function fetchDelete(info: string, init?: TypedRequestInit) {
-    return fetchInternal("DELETE", info, init, {
+function apiDelete(info: string, init?: TypedRequestInit) {
+    return api("DELETE", info, init, {
         qs: getModel(init)
     });
 }
 
 
 /** Get all users (matching filter) */
-async function fetchGet(info: "/api/users", init?: TypedRequestInit<{ filter: string }>): Promise<GetUserModel[]>;
+async function apiGet(info: "/api/users", init?: TypedRequestInit<{ filter: string }>): Promise<GetUserModel[]>;
 
 /** IMPL of GET */
-function fetchGet(info: string, init?: TypedRequestInit) {
-    return fetchInternal("GET", info, init, {
+function apiGet(info: string, init?: TypedRequestInit) {
+    return api("GET", info, init, {
         qs: getModel(init)
     });
 }
 
 
 /** Helpers */
-async function fetchInternal(method: string, info: string, init: RequestInit, include: { qs?: object, params?: object, body?: object }) {
+async function api(method: string, info: string, init: RequestInit, include: { qs?: object, params?: object, body?: object }) {
     const qs    = !!include.qs ? formatQueryString(include.qs) : "";
     const body  = !!include.body ? JSON.stringify(include.body) : undefined;
     info        = !!include.params ? formatParams(info, include.params) : info;
@@ -93,10 +93,10 @@ function formatQueryString<T extends object>(model: T) {
 }
 
 /** Example Usage */
-fetchPost("/api/users", { name: "Ted", age: 25 });
-fetchPost("/api/posts", { body: "This is a test" });
-fetchDelete("/api/users", { id: 5 });
-fetchGet("/api/users");
+apiPost("/api/users", { name: "Ted", age: 25 });
+apiPost("/api/posts", { body: "This is a test" });
+apiDelete("/api/users", { id: 5 });
+apiGet("/api/users");
 
 /** Types */
 
