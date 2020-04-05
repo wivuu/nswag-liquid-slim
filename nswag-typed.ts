@@ -6,7 +6,7 @@ const jsonRequestInfo : RequestInit = {
     }
 }
 
-const formRequestInfo : RequestInit = {
+const defaultRequestInfo : RequestInit = {
     headers: {
         "Accept": "application/json"
     }
@@ -14,13 +14,13 @@ const formRequestInfo : RequestInit = {
 
 
 /** Generated Add Post description goes here */
-async function apiPost(info: "/api/posts", init: TypedRequestInit<AddPostModel>): Promise<AddPostReturnModel>;
+async function apiPost(info: "/api/posts", params: null, init: TypedRequestInit<AddPostModel>): Promise<AddPostReturnModel>;
 /** Generated Add User description goes here */
-async function apiPost(info: "/api/users", init: TypedRequestInit<AddUserModel>): Promise<AddUserReturnModel>;
+async function apiPost(info: "/api/users", params: null, init: TypedRequestInit<AddUserModel>): Promise<AddUserReturnModel>;
 
 /** IMPL of POST */
 function apiPost(info: string, params?: object, init?: TypedRequestInit) {
-    return api("POST", info, init, params, getModel(init));
+    return apiJson("POST", info, init, params, getModel(init));
 }
 
 
@@ -29,7 +29,7 @@ async function apiDelete(info: "/api/users", init: TypedRequestInit<DeleteUserMo
 
 /** IMPL of DELETE */
 function apiDelete(info: string, init?: TypedRequestInit) {
-    return api("DELETE", info, init, getModel(init));
+    return apiBase("DELETE", info, init, getModel(init));
 }
 
 
@@ -38,15 +38,26 @@ async function apiGet(info: "/api/users", init?: TypedRequestInit<{ filter: stri
 
 /** IMPL of GET */
 function apiGet(info: string, init?: TypedRequestInit) {
-    return api("GET", info, init, getModel(init));
+    return apiBase("GET", info, init, getModel(init));
 }
+
 
 /** IMPL of PUT */
-function apiPUT(info: string, init?: TypedRequestInit) {
+function apiPut(info: string, params?: object, init?: TypedRequestInit) {
+    return apiJson("PUT", info, init, params, getModel(init));
 }
+
 
 /** Helpers */
-async function api(method: string, info: string, init: RequestInit, params?: object, body?: object) {
+async function apiJson(method: HttpMethodsWithBody, info: string, init: RequestInit, params?: object, body?: object) {
+    return apiBase(method, info, init, params, !!body ? JSON.stringify(body) : undefined);
+}
+
+async function apiForm(method: HttpMethodsWithBody, info: string, init: RequestInit, params?: object, body?: object) {
+    return apiBase(method, info, init, params, !!body ? getFormData(body) : undefined);
+}
+
+async function apiBase(method: HttpMethods, info: string, init: RequestInit, params?: object, body?: string | FormData) {
     info     = !!params ? formatParams(info, params) : info;
     const qs = !!params ? formatQueryString(params)  : "";
 
@@ -54,31 +65,14 @@ async function api(method: string, info: string, init: RequestInit, params?: obj
         info + qs,
         { 
             method, 
-            ...jsonRequestInfo, 
+            ...body instanceof FormData ? defaultRequestInfo : jsonRequestInfo,
             ...init, 
-            body: !!body ? JSON.stringify(body) : undefined 
-        }
-    );
+            body
+        });
 
     return await response.json();
 }
 
-async function apiForm(method: string, info: string, init: RequestInit, params?: object, body?: object) {
-    info     = !!params ? formatParams(info, params) : info;
-    const qs = !!params ? formatQueryString(params)  : "";
-
-    const response = await fetch(
-        info + qs,
-        { 
-            method, 
-            ...formRequestInfo, 
-            ...init, 
-            body: !!body ? getFormData(body) : undefined
-        }
-    );
-
-    return await response.json();
-}
 
 /** Return 'model' or 'init' object, but if 'model' is inside 'init', removes 'model' property */
 function getModel(init: { model?: any }) {
@@ -120,10 +114,9 @@ function getFormData(model: object) {
         if (value !== null && value !== undefined)
             data.append(key, value.toString());
     }
-    
+
     return data;
 }
-
 
 /** Format a querystring from an object */
 function formatQueryString<T extends object>(model: T) {
@@ -142,12 +135,14 @@ function formatQueryString<T extends object>(model: T) {
 }
 
 /** Example Usage */
-apiPost("/api/users", { name: "Ted", age: 25 });
-apiPost("/api/posts", { body: "This is a test" });
+apiPost("/api/users", null, { name: "Ted", age: 25 });
+apiPost("/api/posts", null, { body: "This is a test" });
 apiDelete("/api/users", { id: 5 });
 apiGet("/api/users");
 
 /** Types */
+type HttpMethodsWithBody = "PUT" | "POST" | "PATCH";
+type HttpMethods = "HEAD" | "GET" | "DELETE" | HttpMethodsWithBody;
 
 type AddPostModel = {
     subject?: string
