@@ -15,7 +15,8 @@ namespace nswag_test
             {
                 // ClientBaseClass = "RootApi",
                 UseGetBaseUrlMethod = true,
-                Template = TypeScriptTemplate.Fetch
+                ClassName = "{controller}",
+                Template            = TypeScriptTemplate.Fetch
             };
 
             settings.TypeScriptGeneratorSettings.TemplateDirectory = "./Templates";
@@ -24,9 +25,7 @@ namespace nswag_test
 
             var generator = new TypeScriptClientGenerator(doc, settings);
 
-            var code = generator.GenerateFile();
-
-            await File.WriteAllTextAsync("output.ts", code);
+            await File.WriteAllTextAsync("output.ts", generator.GenerateFile());
         }
     }
 }
