@@ -175,3 +175,5 @@ type GetUserModel = {
 type TypedRequestInit<T = any> = T | ({ model: any } & RequestInit);
 
 type TypedResponse<T = any> = T;
+
+export {}
