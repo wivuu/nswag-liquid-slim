@@ -1,7 +1,8 @@
 /** Constants */
 const defaultRequestInfo : RequestInit = {
     headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
 }
 
@@ -12,10 +13,8 @@ async function apiPost(info: "/api/posts", init: TypedRequestInit<AddPostModel>)
 async function apiPost(info: "/api/users", init: TypedRequestInit<AddUserModel>): Promise<AddUserReturnModel>;
 
 /** IMPL of POST */
-function apiPost(info: string, init?: TypedRequestInit) {
-    return api("POST", info, init, {
-        body: getModel(init)
-    });
+function apiPost(info: string, params?: object, init?: TypedRequestInit) {
+    return api("POST", info, init, params, getModel(init));
 }
 
 
@@ -24,9 +23,7 @@ async function apiDelete(info: "/api/users", init: TypedRequestInit<DeleteUserMo
 
 /** IMPL of DELETE */
 function apiDelete(info: string, init?: TypedRequestInit) {
-    return api("DELETE", info, init, {
-        qs: getModel(init)
-    });
+    return api("DELETE", info, init, getModel(init));
 }
 
 
@@ -35,21 +32,26 @@ async function apiGet(info: "/api/users", init?: TypedRequestInit<{ filter: stri
 
 /** IMPL of GET */
 function apiGet(info: string, init?: TypedRequestInit) {
-    return api("GET", info, init, {
-        qs: getModel(init)
-    });
+    return api("GET", info, init, getModel(init));
 }
 
+/** IMPL of PUT */
+function apiPUT(info: string, init?: TypedRequestInit) {
+}
 
 /** Helpers */
-async function api(method: string, info: string, init: RequestInit, include: { qs?: object, params?: object, body?: object }) {
-    const qs    = !!include.qs ? formatQueryString(include.qs) : "";
-    const body  = !!include.body ? JSON.stringify(include.body) : undefined;
-    info        = !!include.params ? formatParams(info, include.params) : info;
+async function api(method: string, info: string, init: RequestInit, params?: object, body?: object) {
+    info     = !!params ? formatParams(info, params) : info;
+    const qs = !!params ? formatQueryString(params)  : "";
 
     const response = await fetch(
         info + qs,
-        { method, ...defaultRequestInfo, ...init, body }
+        { 
+            method, 
+            ...defaultRequestInfo, 
+            ...init, 
+            body: !!body ? JSON.stringify(body) : undefined 
+        }
     );
 
     return await response.json();
@@ -66,11 +68,20 @@ function getModel(init: { model?: any }) {
     return init;
 }
 
-/** Format params string, removing {template} values */
+const pattern = /\/\{\w+\}/g;
+
+/** Format params string, removing {template} values and any matches from the params object */
 function formatParams<T extends object>(info: string, model: T) {
-    for (const key of Object.keys(model)) {
-        const pattern = new RegExp("{" + key + "}", "g");
-        info          = info.replace(pattern, model[key]);
+    for (const m of info.match(pattern)) {
+        const key   = m.slice(2, -1);
+        const value = model[key];
+        
+        if (value !== null && value !== undefined) {
+            info = info.replace(m, "/" + encodeURIComponent("" + value));
+            delete model[key];
+        }
+        else
+            info = info.replace(m, "");
     }
 
     return info;
@@ -86,7 +97,7 @@ function formatQueryString<T extends object>(model: T) {
               value = model[key];
         
         qs += (i === 0 ? "?" : "&") +
-              encodeURIComponent(key) + "=" + encodeURIComponent(value);
+              encodeURIComponent(key) + "=" + encodeURIComponent("" + value);
     }
 
     return qs;
