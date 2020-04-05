@@ -1,7 +1,13 @@
 /** Constants */
-const defaultRequestInfo : RequestInit = {
+const jsonRequestInfo : RequestInit = {
     headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+}
+
+const formRequestInfo : RequestInit = {
+    headers: {
         "Accept": "application/json"
     }
 }
@@ -48,9 +54,26 @@ async function api(method: string, info: string, init: RequestInit, params?: obj
         info + qs,
         { 
             method, 
-            ...defaultRequestInfo, 
+            ...jsonRequestInfo, 
             ...init, 
             body: !!body ? JSON.stringify(body) : undefined 
+        }
+    );
+
+    return await response.json();
+}
+
+async function apiForm(method: string, info: string, init: RequestInit, params?: object, body?: object) {
+    info     = !!params ? formatParams(info, params) : info;
+    const qs = !!params ? formatQueryString(params)  : "";
+
+    const response = await fetch(
+        info + qs,
+        { 
+            method, 
+            ...formRequestInfo, 
+            ...init, 
+            body: !!body ? getFormData(body) : undefined
         }
     );
 
@@ -87,9 +110,24 @@ function formatParams<T extends object>(info: string, model: T) {
     return info;
 }
 
+/** Return formdata */
+function getFormData(model: object) {
+    const data = new FormData();
+
+    for (const key of Object.keys(model)) {
+        const value = model[key];
+
+        if (value !== null && value !== undefined)
+            data.append(key, value.toString());
+    }
+    
+    return data;
+}
+
+
 /** Format a querystring from an object */
 function formatQueryString<T extends object>(model: T) {
-    const keys = Object.keys(model)
+    const keys = Object.keys(model);
     let qs     = "";
 
     for (let i = 0; i < keys.length; ++i) {
