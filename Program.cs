@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using NSwag;
 using NSwag.CodeGeneration.TypeScript;
@@ -25,7 +26,15 @@ namespace nswag_test
 
             var generator = new TypeScriptClientGenerator(doc, settings);
 
-            await File.WriteAllTextAsync("output.ts", generator.GenerateFile());
+            var fsw = new FileSystemWatcher("Templates");
+
+            while (true)
+            {
+                Console.WriteLine("Compiling output.ts...");
+                await File.WriteAllTextAsync("output.ts", generator.GenerateFile());
+
+                fsw.WaitForChanged(WatcherChangeTypes.Changed);
+            }
         }
     }
 }
