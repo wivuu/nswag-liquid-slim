@@ -31,7 +31,15 @@ namespace nswag_test
             while (true)
             {
                 Console.WriteLine("Compiling output.ts...");
-                await File.WriteAllTextAsync("output.ts", generator.GenerateFile());
+                
+                try
+                {
+                    await File.WriteAllTextAsync("output.ts", generator.GenerateFile());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
                 fsw.WaitForChanged(WatcherChangeTypes.Changed);
             }
