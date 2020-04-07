@@ -150,3 +150,7 @@ namespace {{ Namespace }} {
 {% if HasModuleName -%}
 }
 {% endif -%}
+
+
+type HttpMethodsWithBody = "PUT" | "POST" | "PATCH";
+type HttpMethods = "HEAD" | "GET" | "DELETE" | HttpMethodsWithBody;
