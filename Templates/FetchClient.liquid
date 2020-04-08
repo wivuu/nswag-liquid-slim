@@ -1,29 +1,23 @@
 ﻿{% if HasOperations -%}
 
-{% if GenerateClientInterfaces -%}
-{% if ExportTypes %}export {% endif %}interface I{{ Class }} {
-{%     for operation in Operations -%}
-    {% template Client.Method.Documentation %}
-    {{ operation.MethodAccessModifier }}{{ operation.ActualOperationName }}({% for parameter in operation.Parameters %}{{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}{% if parameter.IsLast == false %}, {% endif %}{% endfor %}): Promise<{{ operation.ResultType }}>;
-{%     endfor -%}}
-{% endif -%}
-
 {% if HasExtensionCode -%}
     {{ ExtensionCode }}
 {% endif -%}
+
 
 {% comment %}
     PARAMETER DECLARATIONS
 {% endcomment -%}
 {% for operation in Operations | sort: HttpMethod -%}
-{%if operation.Parameters.first -%}
+{% if operation.Parameters.first -%}
 type {{operation.OperationName}}{{ Class }}Params = {
 {% for parameter in operation.Parameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
 {% endfor -%}
 };
-{%endif-%}
+{% endif -%}
 {% endfor -%}
+
 
 {% comment %}
     GET
@@ -32,14 +26,15 @@ type {{operation.OperationName}}{{ Class }}Params = {
 {% if operation.HttpMethod == "get" -%}
 
 {% template Client.Method.Documentation -%}
-export function get{{ Class }}(info: "/{{ operation.Path }}"{%if operation.Parameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%endif%}): Promise<{{ operation.ResultType }}>;
+export function get{{ Class }}(info: "/{{ operation.Path }}"{%if operation.Parameters.first %}, params: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
 
 /** GET {{Class}} */
-export async function get{{ Class }}(info: string, init: RequestInit, params?: object, body?: object) {
-    return apiBase("GET", info, init, params, !!body ? JSON.stringify(body) : undefined);
+export async function get{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
+    // return apiBase("GET", info, init, getModel(init));
+    throw new Error("Not implemented");
 }
 
 {% comment %}
@@ -47,10 +42,17 @@ export async function get{{ Class }}(info: string, init: RequestInit, params?: o
 {% endcomment -%}
 {% for operation in Operations | sort: HttpMethod -%}
 {% if operation.HttpMethod == "put" %}
-    {% template Client.Method.Documentation -%}
-    export function put{{ Class }}(info: "/{{ operation.Path }}"{%if operation.Parameters.first %}, {%endif%}{% for parameter in operation.Parameters %}{{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}{% if parameter.IsLast == false %}, {% endif %}{% endfor %}): Promise<{{ operation.ResultType }}>;
+
+{% template Client.Method.Documentation -%}
+export function put{{ Class }}(info: "/{{ operation.Path }}"{%if operation.Parameters.first %}, params: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%endif%}): Promise<{{ operation.ResultType }}>;
+
 {% endif %}
 {% endfor -%}
 
+/** PUT {{Class}} */
+export async function put{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
+    // return apiBase("GET", info, init, getModel(init));
+    throw new Error("Not implemented");
+}
 
 {% endif -%}

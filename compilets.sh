@@ -1,0 +1,1 @@
+tsc --watch --lib DOM,ES6 --target esnext output.ts

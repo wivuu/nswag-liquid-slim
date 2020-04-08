@@ -15,11 +15,13 @@ namespace nswag_test
             var settings = new TypeScriptClientGeneratorSettings
             {
                 // ClientBaseClass = "RootApi",
-                UseGetBaseUrlMethod = true,
-                ClassName = "{controller}",
+                // UseGetBaseUrlMethod = true,
+                ClassName           = "{controller}",
                 Template            = TypeScriptTemplate.Fetch
             };
 
+            settings.TypeScriptGeneratorSettings.EnumStyle =
+                NJsonSchema.CodeGeneration.TypeScript.TypeScriptEnumStyle.Enum;
             settings.TypeScriptGeneratorSettings.TemplateDirectory = "./Templates";
             settings.TypeScriptGeneratorSettings.TypeStyle = 
                 NJsonSchema.CodeGeneration.TypeScript.TypeScriptTypeStyle.Interface;
