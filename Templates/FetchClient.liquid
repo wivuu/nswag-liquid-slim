@@ -41,6 +41,30 @@ export function get{{ Class }}(info: string, init?: TypedRequestInit): Promise<u
 }
 {% endif -%}
 
+
+{% comment %}
+    HEAD
+{% endcomment -%}
+{% assign has_head = false %}
+{% for operation in Operations | sort: HttpMethod -%}
+{% if operation.HttpMethod == "head" -%}
+{% assign has_head = true %}
+
+{% template Client.Method.Documentation -%}
+export function head{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
+
+{% endif -%}
+{% endfor -%}
+
+{% if has_head -%}
+/** HEAD {{Class}} */
+export function head{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
+    // return apiBase("HEAD", info, init, getModel(init));
+    throw new Error("Not implemented");
+}
+{% endif -%}
+
+
 {% comment %}
     DELETE
 {% endcomment -%}
@@ -62,6 +86,7 @@ export function delete{{ Class }}(info: string, init?: TypedRequestInit): Promis
     throw new Error("Not implemented");
 }
 {% endif -%}
+
 
 {% comment %}
     PUT -- JSON
@@ -110,29 +135,10 @@ export function post{{ Class }}(info: string, params?: object, init?: TypedReque
 }
 {% endif -%}
 
-
-{% comment %}
-    POST -- FormData
-{% endcomment -%}
-{% assign has_post_form = false -%}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "post" and operation.HasFormParameters == true -%}
-{% assign has_post_form = true -%}
-
-{% template Client.Method.Documentation -%}
-export function post{{ Class }}Form(info: "/{{ operation.Path }}"{%if operation.Parameters.first %}, init: {{operation.OperationName}}{{ Class }}Params{%endif%}): Promise<{{ operation.ResultType }}>;
+// TODO - {{ Class }}
+// POST  -- FORM
+// PUT   -- FORM
+// PATCH -- JSON
+// PATCH -- FORM
 
 {% endif -%}
-{% endfor -%}
-
-{% if has_post_form -%}
-
-/** POST {{Class}} */
-export function post{{ Class }}Form(info: string, params?: object, body?: object, init?: RequestInit): Promise<unknown> {
-    // return apiBase("GET", info, init, getModel(init));
-    throw new Error("Not implemented");
-}
-{% endif -%}
-
-{% endif -%}
-
