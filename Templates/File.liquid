@@ -154,6 +154,3 @@ namespace {{ Namespace }} {
 
 type HttpMethodsWithBody = "PUT" | "POST" | "PATCH";
 type HttpMethods = "HEAD" | "GET" | "DELETE" | HttpMethodsWithBody;
-
-type TypedRequestInit<T = any> = T | ({ model: any } & RequestInit);
-{% comment %} type TypedResponse<T = any> = T; {% endcomment %}
