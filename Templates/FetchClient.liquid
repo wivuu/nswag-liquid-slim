@@ -4,13 +4,14 @@
     {{ ExtensionCode }}
 {% endif -%}
 
+export module {{ Class }} {
 
 {% comment %}
     PATH PARAMETER DECLARATIONS
 {% endcomment -%}
 {% for operation in Operations | sort: HttpMethod -%}
 {% if operation.PathParameters.first -%}
-type {{operation.OperationName}}{{ Class }}Params = {
+type {{operation.OperationName}}Params = {
 {% for parameter in operation.PathParameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
 {% endfor -%}
@@ -28,14 +29,14 @@ type {{operation.OperationName}}{{ Class }}Params = {
 {% assign has_get = true %}
 
 {% template Client.Method.Documentation -%}
-export function get{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
+export function get(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
 
 {% if has_get -%}
 /** GET {{Class}} */
-export function get{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
+export function get(info: string, init?: TypedRequestInit): Promise<unknown> {
     // return apiBase("GET", info, init, getModel(init));
     throw new Error("Not implemented");
 }
@@ -51,14 +52,14 @@ export function get{{ Class }}(info: string, init?: TypedRequestInit): Promise<u
 {% assign has_head = true %}
 
 {% template Client.Method.Documentation -%}
-export function head{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
+export function head(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
 
 {% if has_head -%}
 /** HEAD {{Class}} */
-export function head{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
+export function head(info: string, init?: TypedRequestInit): Promise<unknown> {
     // return apiBase("HEAD", info, init, getModel(init));
     throw new Error("Not implemented");
 }
@@ -74,14 +75,14 @@ export function head{{ Class }}(info: string, init?: TypedRequestInit): Promise<
 {% assign has_delete = true %}
 
 {% template Client.Method.Documentation -%}
-export function delete{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
+export function del(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
 
 {% if has_delete -%}
 /** DELETE {{Class}} */
-export function delete{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
+export function del(info: string, init?: TypedRequestInit): Promise<unknown> {
     // return apiBase("DELETE", info, init, getModel(init));
     throw new Error("Not implemented");
 }
@@ -97,7 +98,7 @@ export function delete{{ Class }}(info: string, init?: TypedRequestInit): Promis
 {% assign has_put_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function put{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: TypedRequestInit<{{operation.ContentParameter.Type}}>{%endif%}): Promise<{{ operation.ResultType }}>;
+export function put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: TypedRequestInit<{{operation.ContentParameter.Type}}>{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -105,7 +106,7 @@ export function put{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathP
 {% if has_put_json -%}
 
 /** PUT {{Class}} */
-export function put{{ Class }}(info: string, params?: object, init?: TypedRequestInit): Promise<unknown> {
+export function put(info: string, params?: object, init?: TypedRequestInit): Promise<unknown> {
     // return apiBase("PUT", info, init, getModel(init));
     throw new Error("Not implemented");
 }
@@ -121,7 +122,7 @@ export function put{{ Class }}(info: string, params?: object, init?: TypedReques
 {% assign has_post_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function post{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: TypedRequestInit<{{operation.ContentParameter.Type}}>{%endif%}): Promise<{{ operation.ResultType }}>;
+export function post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: TypedRequestInit<{{operation.ContentParameter.Type}}>{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -129,8 +130,32 @@ export function post{{ Class }}(info: "/{{ operation.Path }}"{%if operation.Path
 {% if has_post_json -%}
 
 /** POST {{Class}} */
-export function post{{ Class }}(info: string, params?: object, init?: TypedRequestInit): Promise<unknown> {
+export function post(info: string, params?: object, init?: TypedRequestInit): Promise<unknown> {
     // return apiBase("POST", info, init, getModel(init));
+    throw new Error("Not implemented");
+}
+{% endif -%}
+
+
+{% comment %}
+    PATCH -- JSON
+{% endcomment -%}
+{% assign has_patch_json = false -%}
+{% for operation in Operations | sort: HttpMethod -%}
+{% if operation.HttpMethod == "patch" and operation.HasFormParameters == false -%}
+{% assign has_patch_json = true -%}
+
+{% template Client.Method.Documentation -%}
+export function patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: TypedRequestInit<{{operation.ContentParameter.Type}}>{%endif%}): Promise<{{ operation.ResultType }}>;
+
+{% endif -%}
+{% endfor -%}
+
+{% if has_patch_json -%}
+
+/** PATCH {{Class}} */
+export function patch(info: string, params?: object, init?: TypedRequestInit): Promise<unknown> {
+    // return apiBase("PATCH", info, init, getModel(init));
     throw new Error("Not implemented");
 }
 {% endif -%}
@@ -138,7 +163,7 @@ export function post{{ Class }}(info: string, params?: object, init?: TypedReque
 // TODO - {{ Class }}
 // POST  -- FORM
 // PUT   -- FORM
-// PATCH -- JSON
 // PATCH -- FORM
+}
 
 {% endif -%}
