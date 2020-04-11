@@ -28,15 +28,15 @@ type {{operation.OperationName}}{{ Class }}Params = {
 {% assign has_get = true %}
 
 {% template Client.Method.Documentation -%}
-export function get{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%endif%}, init?: RequestInit): Promise<{{ operation.ResultType }}>;
+export function get{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
 
 {% if has_get -%}
 /** GET {{Class}} */
-export function get{{ Class }}(info: string, params?: object, init?: RequestInit): Promise<unknown> {
-    // return apiBase("GET", info, params, getModel(params));
+export function get{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
+    // return apiBase("GET", info, init, getModel(init));
     throw new Error("Not implemented");
 }
 {% endif -%}
@@ -44,20 +44,20 @@ export function get{{ Class }}(info: string, params?: object, init?: RequestInit
 {% comment %}
     DELETE
 {% endcomment -%}
-{% assign has_delete = false -%}
+{% assign has_delete = false %}
 {% for operation in Operations | sort: HttpMethod -%}
 {% if operation.HttpMethod == "delete" -%}
-{% assign has_delete = true -%}
+{% assign has_delete = true %}
 
 {% template Client.Method.Documentation -%}
-export function delete{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%endif%}, init?: RequestInit): Promise<{{ operation.ResultType }}>;
+export function delete{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, init: TypedRequestInit<{{operation.OperationName}}{{ Class }}Params>{%else%}, init?: RequestInit{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
 
 {% if has_delete -%}
 /** DELETE {{Class}} */
-export function delete{{ Class }}(info: string, params?: object, init?: RequestInit): Promise<unknown> {
+export function delete{{ Class }}(info: string, init?: TypedRequestInit): Promise<unknown> {
     // return apiBase("DELETE", info, init, getModel(init));
     throw new Error("Not implemented");
 }
@@ -72,7 +72,7 @@ export function delete{{ Class }}(info: string, params?: object, init?: RequestI
 {% assign has_put_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function put{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}, init?: RequestInit): Promise<{{ operation.ResultType }}>;
+export function put{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: TypedRequestInit<{{operation.ContentParameter.Type}}>{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -80,8 +80,8 @@ export function put{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathP
 {% if has_put_json -%}
 
 /** PUT {{Class}} */
-export function put{{ Class }}(info: string, params?: object, body?: object, init?: RequestInit): Promise<unknown> {
-    // return apiBase("GET", info, init, getModel(init));
+export function put{{ Class }}(info: string, params?: object, init?: TypedRequestInit): Promise<unknown> {
+    // return apiBase("PUT", info, init, getModel(init));
     throw new Error("Not implemented");
 }
 {% endif -%}
@@ -96,7 +96,7 @@ export function put{{ Class }}(info: string, params?: object, body?: object, ini
 {% assign has_post_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function post{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}, init?: RequestInit): Promise<{{ operation.ResultType }}>;
+export function post{{ Class }}(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}{{ Class }}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: TypedRequestInit<{{operation.ContentParameter.Type}}>{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -104,8 +104,8 @@ export function post{{ Class }}(info: "/{{ operation.Path }}"{%if operation.Path
 {% if has_post_json -%}
 
 /** POST {{Class}} */
-export function post{{ Class }}(info: string, params?: object, body?: object, init?: RequestInit): Promise<unknown> {
-    // return apiBase("GET", info, init, getModel(init));
+export function post{{ Class }}(info: string, params?: object, init?: TypedRequestInit): Promise<unknown> {
+    // return apiBase("POST", info, init, getModel(init));
     throw new Error("Not implemented");
 }
 {% endif -%}
