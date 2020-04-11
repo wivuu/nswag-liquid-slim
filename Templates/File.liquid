@@ -151,6 +151,72 @@ namespace {{ Namespace }} {
 }
 {% endif -%}
 
-
 type HttpMethodsWithBody = "PUT" | "POST" | "PATCH";
 type HttpMethods = "HEAD" | "GET" | "DELETE" | HttpMethodsWithBody;
+
+const jsonRequestInfo : RequestInit = {
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+}
+
+const defaultRequestInfo : RequestInit = {
+    headers: {
+        "Accept": "application/json"
+    }
+}
+
+const pattern = /\/\{\w+\}/g;
+
+/** Format params string, removing {template} values and any matches from the params object */
+function formatParams<T extends { [key: string]: any }>(info: string, model: T) {
+    const matches = info.match(pattern);
+
+    if (matches)
+        for (const m of matches) {
+            const key   = m.slice(2, -1),
+                  value = model[key] as any;
+            
+            if (value !== null && value !== undefined) {
+                info = info.replace(m, "/" + encodeURIComponent("" + value));
+                delete model[key] as any;
+            }
+            else
+                info = info.replace(m, "");
+        }
+
+    return info;
+}
+
+/** Format a querystring from an object */
+function formatQueryString<T extends { [key: string]: any }>(model: T) {
+    const keys = Object.keys(model);
+    let qs     = "";
+
+    for (let i = 0; i < keys.length; ++i) {
+        const key   = keys[i], 
+              value = model[key] as any;
+        
+        qs += (i === 0 ? "?" : "&") +
+              encodeURIComponent(key) + "=" + encodeURIComponent("" + value);
+    }
+
+    return qs;
+}
+
+/** API Base function */
+async function apiBase(method: HttpMethods, info: string, params?: object | null, body?: string | FormData) {
+    info     = !!params ? formatParams(info, params) : info;
+    const qs = !!params ? formatQueryString(params)  : "";
+
+    const response = await fetch(
+        info + qs,
+        { 
+            method, 
+            ...body instanceof FormData ? defaultRequestInfo : jsonRequestInfo,
+            body
+        });
+
+    return await response.json();
+}

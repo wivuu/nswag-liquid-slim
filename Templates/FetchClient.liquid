@@ -37,8 +37,7 @@ export function get(info: "/{{ operation.Path }}"{%if operation.PathParameters.f
 {% if has_get -%}
 /** GET {{Class}} */
 export function get(info: string, params?: object): Promise<unknown> {
-    // return apiBase("GET", info, params, getModel(params));
-    throw new Error("Not implemented");
+    return apiBase("GET", info, params);
 }
 {% endif -%}
 
@@ -60,8 +59,7 @@ export function head(info: "/{{ operation.Path }}"{%if operation.PathParameters.
 {% if has_head -%}
 /** HEAD {{Class}} */
 export function head(info: string, params?: object): Promise<unknown> {
-    // return apiBase("HEAD", info, params, getModel(params));
-    throw new Error("Not implemented");
+    return apiBase("HEAD", info, params);
 }
 {% endif -%}
 
@@ -83,8 +81,7 @@ export function del(info: "/{{ operation.Path }}"{%if operation.PathParameters.f
 {% if has_delete -%}
 /** DELETE {{Class}} */
 export function del(info: string, params?: object): Promise<unknown> {
-    // return apiBase("DELETE", info, params, getModel(params));
-    throw new Error("Not implemented");
+    return apiBase("DELETE", info, params);
 }
 {% endif -%}
 
@@ -98,7 +95,7 @@ export function del(info: string, params?: object): Promise<unknown> {
 {% assign has_put_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+export function put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -106,9 +103,8 @@ export function put(info: "/{{ operation.Path }}"{%if operation.PathParameters.f
 {% if has_put_json -%}
 
 /** PUT {{Class}} */
-export function put(info: string, params?: object, init?: object): Promise<unknown> {
-    // return apiBase("PUT", info, init, getModel(init));
-    throw new Error("Not implemented");
+export function put(info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("PUT", info, params, JSON.stringify(body));
 }
 {% endif -%}
 
@@ -122,7 +118,7 @@ export function put(info: string, params?: object, init?: object): Promise<unkno
 {% assign has_post_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+export function post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -130,9 +126,8 @@ export function post(info: "/{{ operation.Path }}"{%if operation.PathParameters.
 {% if has_post_json -%}
 
 /** POST {{Class}} */
-export function post(info: string, params?: object, init?: object): Promise<unknown> {
-    // return apiBase("POST", info, init, getModel(init));
-    throw new Error("Not implemented");
+export function post(info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("POST", info, params, JSON.stringify(body));
 }
 {% endif -%}
 
@@ -146,7 +141,7 @@ export function post(info: string, params?: object, init?: object): Promise<unkn
 {% assign has_patch_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, init: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+export function patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -154,11 +149,11 @@ export function patch(info: "/{{ operation.Path }}"{%if operation.PathParameters
 {% if has_patch_json -%}
 
 /** PATCH {{Class}} */
-export function patch(info: string, params?: object, init?: object): Promise<unknown> {
-    // return apiBase("PATCH", info, init, getModel(init));
-    throw new Error("Not implemented");
+export function patch(info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("PATCH", info, params, JSON.stringify(body));
 }
 {% endif -%}
+
 
 // TODO - {{ Class }}
 // POST  -- FORM
