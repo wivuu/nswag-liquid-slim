@@ -6,13 +6,24 @@
 
 export module {{ Class }} {
 
+{% for operation in Operations | sort: HttpMethod -%}
 {% comment %}
     PATH PARAMETER DECLARATIONS
 {% endcomment -%}
-{% for operation in Operations | sort: HttpMethod -%}
 {% if operation.PathParameters.first -%}
 type {{operation.OperationName}}Params = {
 {% for parameter in operation.PathParameters -%}
+    {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
+{% endfor -%}
+};
+{% endif -%}
+
+{% comment %} 
+    FORM PARAMETER DECLARATIONS
+{% endcomment %}
+{% if operation.HasFormParameters -%}
+type {{operation.OperationName}}Form = {
+{% for parameter in operation.FormParameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
 {% endfor -%}
 };
@@ -155,10 +166,74 @@ export function patch(info: string, params?: object | null, body?: object): Prom
 {% endif -%}
 
 
-// TODO - {{ Class }}
-// POST  -- FORM
-// PUT   -- FORM
-// PATCH -- FORM
+{% comment %}
+    PUT -- FORM
+{% endcomment -%}
+{% assign has_put_form = false -%}
+{% for operation in Operations | sort: HttpMethod -%}
+{% if operation.HttpMethod == "put" and operation.HasFormParameters == true -%}
+{% assign has_put_form = true -%}
+
+{% template Client.Method.Documentation -%}
+export function putForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+
+{% endif -%}
+{% endfor -%}
+
+{% if has_put_form -%}
+
+/** PUT {{Class}} */
+export function putForm(info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("PUT", info, params, getFormData(body));
+}
+{% endif -%}
+
+
+{% comment %}
+    POST -- FORM
+{% endcomment -%}
+{% assign has_post_form = false -%}
+{% for operation in Operations | sort: HttpMethod -%}
+{% if operation.HttpMethod == "post" and operation.HasFormParameters == true -%}
+{% assign has_post_form = true -%}
+
+{% template Client.Method.Documentation -%}
+export function postForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+
+{% endif -%}
+{% endfor -%}
+
+{% if has_post_form -%}
+
+/** POST {{Class}} */
+export function postForm(info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("POST", info, params, getFormData(body));
+}
+{% endif -%}
+
+
+{% comment %}
+    PATCH -- FORM
+{% endcomment -%}
+{% assign has_patch_form = false -%}
+{% for operation in Operations | sort: HttpMethod -%}
+{% if operation.HttpMethod == "patch" and operation.HasFormParameters == true -%}
+{% assign has_patch_form = true -%}
+
+{% template Client.Method.Documentation -%}
+export function patchForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+
+{% endif -%}
+{% endfor -%}
+
+{% if has_patch_form -%}
+
+/** PATCH {{Class}} */
+export function patchForm(info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("PATCH", info, params, getFormData(body));
+}
+{% endif -%}
+
 }
 
 {% endif -%}

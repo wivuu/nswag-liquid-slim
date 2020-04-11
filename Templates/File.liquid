@@ -180,7 +180,7 @@ function formatParams<T extends { [key: string]: any }>(info: string, model: T) 
             
             if (value !== null && value !== undefined) {
                 info = info.replace(m, "/" + encodeURIComponent("" + value));
-                delete model[key] as any;
+                delete model[key];
             }
             else
                 info = info.replace(m, "");
@@ -196,13 +196,28 @@ function formatQueryString<T extends { [key: string]: any }>(model: T) {
 
     for (let i = 0; i < keys.length; ++i) {
         const key   = keys[i], 
-              value = model[key] as any;
+              value = model[key];
         
         qs += (i === 0 ? "?" : "&") +
               encodeURIComponent(key) + "=" + encodeURIComponent("" + value);
     }
 
     return qs;
+}
+
+/** Return FormData */
+function getFormData<T extends { [key: string]: any }>(model?: T) {
+    const data = new FormData();
+
+    if (model !== undefined)
+        for (const key of Object.keys(model)) {
+            const value = model[key];
+
+            if (value !== null && value !== undefined)
+                data.append(key, value);
+        }
+
+    return data;
 }
 
 /** API Base function */
