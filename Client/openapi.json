@@ -5,11 +5,6 @@
     "title": "Test Fetch Slim",
     "version": "v1"
   },
-  "produces": [
-    "text/plain",
-    "application/json",
-    "text/json"
-  ],
   "paths": {
     "/WeatherForecast": {
       "get": {
@@ -17,6 +12,11 @@
           "WeatherForecast"
         ],
         "operationId": "WeatherForecast_Get",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
         "responses": {
           "200": {
             "x-nullable": false,
@@ -27,6 +27,33 @@
                 "$ref": "#/definitions/WeatherForecast"
               }
             }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "WeatherForecast"
+        ],
+        "operationId": "WeatherForecast_Post",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "forecast",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WeatherForecast"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
           }
         }
       }

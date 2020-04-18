@@ -22,6 +22,9 @@ namespace nswag_liquid_slim.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieve weather forecast
+        /// </summary>
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
@@ -33,6 +36,16 @@ namespace nswag_liquid_slim.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        /// <summary>
+        /// Add a weather forecast
+        /// </summary>
+        /// <param name="forecast">The forecast</param>
+        [HttpPost]
+        public void Post([FromBody]WeatherForecast forecast)
+        {
+
         }
     }
     
