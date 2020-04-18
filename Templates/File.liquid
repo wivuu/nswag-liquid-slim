@@ -154,6 +154,16 @@ namespace {{ Namespace }} {
 type HttpMethodsWithBody = "PUT" | "POST" | "PATCH";
 type HttpMethods = "HEAD" | "GET" | "DELETE" | HttpMethodsWithBody;
 
+{% if UseGetBaseUrlMethod -%}
+let baseUrl = getBaseUrl("{{ BaseUrl }}");
+{% else -%}
+let baseUrl = "{{ BaseUrl }}";
+{% endif -%}
+
+export function setBaseUrl(url: string) {
+    baseUrl = url;
+}
+
 const jsonRequestInfo : RequestInit = {
     headers: {
         "Content-Type": "application/json",
@@ -226,7 +236,7 @@ async function apiBase(method: HttpMethods, info: string, params?: object | null
     const qs = !!params ? formatQueryString(params)  : "";
 
     const response = await fetch(
-        info + qs,
+        baseUrl + info + qs,
         { 
             method, 
             ...body instanceof FormData ? defaultRequestInfo : jsonRequestInfo,

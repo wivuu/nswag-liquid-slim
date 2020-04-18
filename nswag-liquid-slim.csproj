@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <Target Name="NSwag" AfterTargets="Build" Condition="'$(Configuration)' != 'Release'">
-    <Exec EnvironmentVariables="GenerateNSwag=1" Command="$(NSwagExe_Core31) aspnetcore2openapi /AspNetCoreEnvironment:Development /noBuild:true /project:. /output:./openapi.json" />
-    <Exec Command="$(NSwagExe_Core31) openapi2tsclient /input:./openapi.json /TypeStyle:Interface /TemplateDirectory:./Templates /output:output.ts" />
+    <Exec EnvironmentVariables="GenerateNSwag=1" 
+          Command="$(NSwagExe_Core31) aspnetcore2openapi /AspNetCoreEnvironment:Development /noBuild:true /project:. /output:./Client/openapi.json" />
   </Target>
 
   <ItemGroup>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Templates\*.liquid" Watch="false" />
+    <None Include="Templates\*.liquid" Watch="false" />
   </ItemGroup>
 
 </Project>

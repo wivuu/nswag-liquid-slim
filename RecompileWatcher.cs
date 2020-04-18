@@ -20,14 +20,13 @@ namespace nswag_liquid_slim
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var doc = await OpenApiDocument.FromFileAsync("./openapi.json");
+            var doc = await OpenApiDocument.FromFileAsync("./Client/openapi.json");
 
             var settings = new TypeScriptClientGeneratorSettings
             {
-                // ClientBaseClass = "RootApi",
-                // UseGetBaseUrlMethod = true,
-                ClassName           = "{controller}",
-                Template            = TypeScriptTemplate.Fetch
+                ClassName = "{controller}",
+                Template  = TypeScriptTemplate.Fetch,
+                UseGetBaseUrlMethod = true,
             };
 
             settings.TypeScriptGeneratorSettings.EnumStyle =
@@ -48,7 +47,7 @@ namespace nswag_liquid_slim
                     
                     try
                     {
-                        await File.WriteAllTextAsync("output.ts", generator.GenerateFile());
+                        await File.WriteAllTextAsync("./Client/output.ts", generator.GenerateFile());
                     }
                     catch (Exception e)
                     {
