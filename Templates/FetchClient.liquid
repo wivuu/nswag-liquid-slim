@@ -30,7 +30,6 @@ type {{operation.OperationName}}Form = {
 {% endif -%}
 {% endfor -%}
 
-
 {% comment %}
     GET
 {% endcomment -%}
@@ -51,7 +50,6 @@ export function get(info: string, params?: object): Promise<unknown> {
     return apiBase("GET", info, params);
 }
 {% endif -%}
-
 
 {% comment %}
     HEAD
@@ -74,7 +72,6 @@ export function head(info: string, params?: object): Promise<unknown> {
 }
 {% endif -%}
 
-
 {% comment %}
     DELETE
 {% endcomment -%}
@@ -95,7 +92,6 @@ export function del(info: string, params?: object): Promise<unknown> {
     return apiBase("DELETE", info, params);
 }
 {% endif -%}
-
 
 {% comment %}
     PUT -- JSON
@@ -119,7 +115,6 @@ export function put(info: string, params?: object | null, body?: object): Promis
 }
 {% endif -%}
 
-
 {% comment %}
     POST -- JSON
 {% endcomment -%}
@@ -141,7 +136,6 @@ export function post(info: string, params?: object | null, body?: object): Promi
     return apiBase("POST", info, params, JSON.stringify(body));
 }
 {% endif -%}
-
 
 {% comment %}
     PATCH -- JSON
@@ -165,7 +159,6 @@ export function patch(info: string, params?: object | null, body?: object): Prom
 }
 {% endif -%}
 
-
 {% comment %}
     PUT -- FORM
 {% endcomment -%}
@@ -188,7 +181,6 @@ export function putForm(info: string, params?: object | null, body?: object): Pr
 }
 {% endif -%}
 
-
 {% comment %}
     POST -- FORM
 {% endcomment -%}
@@ -210,7 +202,6 @@ export function postForm(info: string, params?: object | null, body?: object): P
     return apiBase("POST", info, params, getFormData(body));
 }
 {% endif -%}
-
 
 {% comment %}
     PATCH -- FORM
