@@ -49,8 +49,8 @@ namespace nswag_liquid_slim
                    .UseSwaggerUi3();
                 #endif
             }
-
-            app.UseHttpsRedirection();
+            else
+                app.UseHttpsRedirection();
 
             app.UseRouting();
 
