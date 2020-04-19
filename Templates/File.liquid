@@ -113,35 +113,6 @@ namespace {{ Namespace }} {
 }
 
 {% endif -%}
-{% if RequiresExceptionClass -%}
-{% if ExportTypes %}export {% endif %}class {{ ExceptionClassName }} extends Error {
-    message: string;
-    status: number; 
-    response: string; 
-    headers: { [key: string]: any; };
-    result: any; 
-
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
-
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
-
-    protected is{{ ExceptionClassName }} = true;
-
-    static is{{ ExceptionClassName }}(obj: any): obj is {{ ExceptionClassName }} {
-        return obj.is{{ ExceptionClassName }} === true;
-    }
-}
-
-{% endif -%}
-{% if GenerateClientClasses -%}
-{% template File.Utilities %}
-{% endif -%}
 
 {{ ExtensionCodeBottom }}
 {% if HasNamespace -%}
