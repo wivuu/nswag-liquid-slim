@@ -11,6 +11,7 @@
         "tags": [
           "WeatherForecast"
         ],
+        "summary": "Retrieve weather forecast",
         "operationId": "WeatherForecast_Get",
         "produces": [
           "text/plain",
@@ -34,6 +35,7 @@
         "tags": [
           "WeatherForecast"
         ],
+        "summary": "Add a weather forecast",
         "operationId": "WeatherForecast_Post",
         "consumes": [
           "application/json",
@@ -45,6 +47,7 @@
             "name": "forecast",
             "in": "body",
             "required": true,
+            "description": "The forecast",
             "schema": {
               "$ref": "#/definitions/WeatherForecast"
             },
