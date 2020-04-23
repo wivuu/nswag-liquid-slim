@@ -15,13 +15,6 @@ namespace nswag_liquid_slim.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
-
         /// <summary>
         /// Retrieve weather forecast
         /// </summary>
@@ -29,13 +22,16 @@ namespace nswag_liquid_slim.Controllers
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+
+            return (
+                from index in Enumerable.Range(1, 5)
+                select new WeatherForecast
+                {
+                    Date         = DateTime.Now.AddDays(index),
+                    TemperatureC = rng.Next(-20, 55),
+                    Summary      = Summaries[rng.Next(Summaries.Length)]
+                }
+            );
         }
 
         /// <summary>
@@ -43,9 +39,19 @@ namespace nswag_liquid_slim.Controllers
         /// </summary>
         /// <param name="forecast">The forecast</param>
         [HttpPost]
-        public void Post([FromBody]WeatherForecast forecast)
+        public WeatherForecast AddForecast(WeatherForecast forecast)
         {
-
+            return forecast;
+        }
+        
+        /// <summary>
+        /// Add a weather forecast
+        /// </summary>
+        /// <param name="forecast">The forecast</param>
+        [HttpPut]
+        public WeatherForecast UpdateForecast(WeatherForecast forecast)
+        {
+            return forecast;
         }
     }
     
@@ -54,8 +60,6 @@ namespace nswag_liquid_slim.Controllers
         public DateTime Date { get; set; }
 
         public int TemperatureC { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 
         public string Summary { get; set; }
     }

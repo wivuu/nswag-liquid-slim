@@ -214,5 +214,14 @@ async function apiBase(method: HttpMethods, info: string, params?: object | null
             body
         });
 
-    return await response.json();
+    if (response.ok)
+        return await response.json();
+    else
+        throw new APIError(await response.json());
+}
+
+class APIError extends Error {
+    constructor(public data: any) {
+        super("API Error");
+    }
 }

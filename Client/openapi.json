@@ -5,6 +5,11 @@
     "title": "Test Fetch Slim",
     "version": "v1"
   },
+  "produces": [
+    "text/plain",
+    "application/json",
+    "text/json"
+  ],
   "paths": {
     "/WeatherForecast": {
       "get": {
@@ -13,11 +18,6 @@
         ],
         "summary": "Retrieve weather forecast",
         "operationId": "WeatherForecast_Get",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
         "responses": {
           "200": {
             "x-nullable": false,
@@ -36,7 +36,7 @@
           "WeatherForecast"
         ],
         "summary": "Add a weather forecast",
-        "operationId": "WeatherForecast_Post",
+        "operationId": "WeatherForecast_AddForecast",
         "consumes": [
           "application/json",
           "text/json",
@@ -56,7 +56,44 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/WeatherForecast"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "WeatherForecast"
+        ],
+        "summary": "Add a weather forecast",
+        "operationId": "WeatherForecast_UpdateForecast",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "forecast",
+            "in": "body",
+            "required": true,
+            "description": "The forecast",
+            "schema": {
+              "$ref": "#/definitions/WeatherForecast"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/WeatherForecast"
+            }
           }
         }
       }
@@ -67,8 +104,7 @@
       "type": "object",
       "required": [
         "date",
-        "temperatureC",
-        "temperatureF"
+        "temperatureC"
       ],
       "properties": {
         "date": {
@@ -76,10 +112,6 @@
           "format": "date-time"
         },
         "temperatureC": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "temperatureF": {
           "type": "integer",
           "format": "int32"
         },
