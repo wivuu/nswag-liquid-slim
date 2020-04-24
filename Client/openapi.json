@@ -5,12 +5,540 @@
     "title": "Test Fetch Slim",
     "version": "v1"
   },
-  "produces": [
-    "text/plain",
-    "application/json",
-    "text/json"
-  ],
   "paths": {
+    "/Account/Login": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Login",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserProfileViewModel"
+            }
+          },
+          "401": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/Account/Logout": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Log user out",
+        "operationId": "Account_Logout",
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/Account/SendReset": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Request a password reset token sent via email",
+        "operationId": "Account_SendReset",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ForgotPasswordViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/Account/ResetPassword/{email}": {
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Reset account password given a valid reset code",
+        "operationId": "Account_ResetPassword",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "code",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "name": "reset",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordResetViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserProfileViewModel"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/Account/ViewInvite/{code}": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Check if invitation valid/exists",
+        "operationId": "Account_ViewInvite",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ViewInviteViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/Account/AcceptInvite/{code}": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Accept an invitation to create a user account",
+        "operationId": "Account_AcceptInvite",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Password",
+            "in": "formData",
+            "required": true,
+            "maxLength": 100,
+            "minLength": 8,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "ConfirmPassword",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "AccountExists",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Email",
+            "in": "formData",
+            "required": true,
+            "format": "email",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "FirstName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "LastName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Title",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Phone",
+            "in": "formData",
+            "required": true,
+            "format": "phone",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Image.Url",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "file",
+            "name": "Image.ImageData",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "AboutMe",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "CustomQuote",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/Account/Profile": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Retrieve user's profile information",
+        "operationId": "Account_GetProfile",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserProfileViewModel"
+            }
+          },
+          "401": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Update user profile",
+        "operationId": "Account_PutProfile",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Email",
+            "in": "formData",
+            "required": true,
+            "format": "email",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "FirstName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "LastName",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Title",
+            "in": "formData",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Phone",
+            "in": "formData",
+            "required": true,
+            "format": "phone",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Image.Url",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "file",
+            "name": "Image.ImageData",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "AboutMe",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "CustomQuote",
+            "in": "formData",
+            "maxLength": 200,
+            "minLength": 0,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/Account/ChangePassword": {
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Change user password",
+        "operationId": "Account_ChangePassword",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "input",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordChangeViewModel"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/Account/Ping": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Ping to test if user still logged in",
+        "operationId": "Account_Ping",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "x-nullable": false,
+            "description": "Session has ended",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
     "/WeatherForecast": {
       "get": {
         "tags": [
@@ -18,6 +546,11 @@
         ],
         "summary": "Retrieve weather forecast",
         "operationId": "WeatherForecast_Get",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
         "responses": {
           "200": {
             "x-nullable": false,
@@ -41,6 +574,11 @@
           "application/json",
           "text/json",
           "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
         ],
         "parameters": [
           {
@@ -75,6 +613,11 @@
           "text/json",
           "application/*+json"
         ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
         "parameters": [
           {
             "name": "forecast",
@@ -100,11 +643,234 @@
     }
   },
   "definitions": {
+    "UserProfileViewModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "email",
+        "firstName",
+        "lastName",
+        "title",
+        "phone",
+        "image"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "firstName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lastName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phone": {
+          "type": "string",
+          "format": "phone",
+          "minLength": 1
+        },
+        "image": {
+          "$ref": "#/definitions/ImageViewModel"
+        },
+        "aboutMe": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 0
+        },
+        "customQuote": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 0
+        }
+      }
+    },
+    "ImageViewModel": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "imageData": {
+          "type": "file"
+        }
+      }
+    },
+    "ProblemDetails": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "instance": {
+          "type": "string"
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      }
+    },
+    "ValidationProblemDetails": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ProblemDetails"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "LoginViewModel": {
+      "type": "object",
+      "example": {
+        "username": "test@crfusa.com",
+        "password": "Password1"
+      },
+      "required": [
+        "username",
+        "password",
+        "recaptchaToken"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recaptchaToken": {
+          "type": "string"
+        }
+      }
+    },
+    "ForgotPasswordViewModel": {
+      "type": "object",
+      "example": {
+        "email": "test@crfusa.com"
+      },
+      "required": [
+        "email",
+        "recaptchaToken"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "recaptchaToken": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetViewModel": {
+      "type": "object",
+      "required": [
+        "password",
+        "confirmPassword"
+      ],
+      "properties": {
+        "password": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 6
+        },
+        "confirmPassword": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ViewInviteViewModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/UserProfileViewModel"
+        },
+        {
+          "type": "object",
+          "required": [
+            "password",
+            "confirmPassword",
+            "accountExists"
+          ],
+          "properties": {
+            "password": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 8
+            },
+            "confirmPassword": {
+              "type": "string",
+              "minLength": 1
+            },
+            "accountExists": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "PasswordChangeViewModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PasswordResetViewModel"
+        },
+        {
+          "type": "object",
+          "required": [
+            "currentPassword"
+          ],
+          "properties": {
+            "currentPassword": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
     "WeatherForecast": {
       "type": "object",
       "required": [
         "date",
-        "temperatureC"
+        "temperatureC",
+        "summary"
       ],
       "properties": {
         "date": {
