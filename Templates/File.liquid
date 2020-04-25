@@ -177,7 +177,10 @@ function formatQueryString<T extends { [key: string]: any }>(model: T) {
 
     for (let i = 0; i < keys.length; ++i) {
         const key   = keys[i], 
-              value = model[key];
+              raw   = model[key],
+              value = raw instanceof Date 
+                ? raw.toJSON() 
+                : raw;
         
         qs += (i === 0 ? "?" : "&") +
               encodeURIComponent(key) + "=" + encodeURIComponent("" + value);
@@ -220,7 +223,7 @@ async function apiBase(method: HttpMethods, info: string, params?: object | null
         throw new APIError(await response.json());
 }
 
-class APIError extends Error {
+export class APIError extends Error {
     constructor(public data: any) {
         super("API Error");
     }

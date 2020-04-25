@@ -19,7 +19,7 @@ namespace nswag_liquid_slim.Controllers
         /// Retrieve weather forecast
         /// </summary>
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<WeatherForecast> Get([FromQuery]DateTime? fromDate)
         {
             var rng = new Random();
 
@@ -27,7 +27,7 @@ namespace nswag_liquid_slim.Controllers
                 from index in Enumerable.Range(1, 5)
                 select new WeatherForecast
                 {
-                    Date         = DateTime.Now.AddDays(index),
+                    Date         = (fromDate ?? DateTime.Now).AddDays(index),
                     TemperatureC = rng.Next(-20, 55),
                     Summary      = Summaries[rng.Next(Summaries.Length)]
                 }

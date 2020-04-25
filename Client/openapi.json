@@ -551,6 +551,15 @@
           "application/json",
           "text/json"
         ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "fromDate",
+            "in": "query",
+            "format": "date-time",
+            "x-nullable": true
+          }
+        ],
         "responses": {
           "200": {
             "x-nullable": false,
