@@ -10,7 +10,7 @@ export module {{ Class }} {
 {% comment %}
     PATH PARAMETER DECLARATIONS
 {% endcomment -%}
-{% if operation.PathParameters.first -%}
+{% if operation.PathParameters.first or operation.QueryParameters.first -%}
 type {{operation.OperationName}}Params = {
 {% for parameter in operation.PathParameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
@@ -42,7 +42,7 @@ type {{operation.OperationName}}Form = {
 {% assign has_get = true %}
 
 {% template Client.Method.Documentation -%}
-export function get(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
+export function get(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -63,7 +63,7 @@ export function get(info: string, params?: object): Promise<unknown> {
 {% assign has_head = true %}
 
 {% template Client.Method.Documentation -%}
-export function head(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
+export function head(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -84,7 +84,7 @@ export function head(info: string, params?: object): Promise<unknown> {
 {% assign has_delete = true %}
 
 {% template Client.Method.Documentation -%}
-export function del(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
+export function del(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -105,7 +105,7 @@ export function del(info: string, params?: object): Promise<unknown> {
 {% assign has_put_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+export function put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -127,7 +127,7 @@ export function put(info: string, params?: object | null, body?: object): Promis
 {% assign has_post_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+export function post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -149,7 +149,7 @@ export function post(info: string, params?: object | null, body?: object): Promi
 {% assign has_patch_json = true -%}
 
 {% template Client.Method.Documentation -%}
-export function patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+export function patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -171,7 +171,7 @@ export function patch(info: string, params?: object | null, body?: object): Prom
 {% assign has_put_form = true -%}
 
 {% template Client.Method.Documentation -%}
-export function putForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+export function putForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -193,7 +193,7 @@ export function putForm(info: string, params?: object | null, body?: object): Pr
 {% assign has_post_form = true -%}
 
 {% template Client.Method.Documentation -%}
-export function postForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+export function postForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
@@ -215,7 +215,7 @@ export function postForm(info: string, params?: object | null, body?: object): P
 {% assign has_patch_form = true -%}
 
 {% template Client.Method.Documentation -%}
-export function patchForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+export function patchForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
 
 {% endif -%}
 {% endfor -%}
