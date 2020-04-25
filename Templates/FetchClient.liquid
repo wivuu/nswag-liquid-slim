@@ -15,6 +15,9 @@ type {{operation.OperationName}}Params = {
 {% for parameter in operation.PathParameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
 {% endfor -%}
+{% for parameter in operation.QueryParameters -%}
+    {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
+{% endfor -%}
 };
 {% endif -%}
 
