@@ -113,35 +113,6 @@ namespace {{ Namespace }} {
 }
 
 {% endif -%}
-{% if RequiresExceptionClass -%}
-{% if ExportTypes %}export {% endif %}class {{ ExceptionClassName }} extends Error {
-    message: string;
-    status: number; 
-    response: string; 
-    headers: { [key: string]: any; };
-    result: any; 
-
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
-
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
-
-    protected is{{ ExceptionClassName }} = true;
-
-    static is{{ ExceptionClassName }}(obj: any): obj is {{ ExceptionClassName }} {
-        return obj.is{{ ExceptionClassName }} === true;
-    }
-}
-
-{% endif -%}
-{% if GenerateClientClasses -%}
-{% template File.Utilities %}
-{% endif -%}
 
 {{ ExtensionCodeBottom }}
 {% if HasNamespace -%}
@@ -153,6 +124,16 @@ namespace {{ Namespace }} {
 
 type HttpMethodsWithBody = "PUT" | "POST" | "PATCH";
 type HttpMethods = "HEAD" | "GET" | "DELETE" | HttpMethodsWithBody;
+
+{% if UseGetBaseUrlMethod -%}
+let baseUrl = getBaseUrl("{{ BaseUrl }}");
+{% else -%}
+let baseUrl = "{{ BaseUrl }}";
+{% endif -%}
+
+export function setBaseUrl(url: string) {
+    baseUrl = url;
+}
 
 const jsonRequestInfo : RequestInit = {
     headers: {
@@ -226,12 +207,21 @@ async function apiBase(method: HttpMethods, info: string, params?: object | null
     const qs = !!params ? formatQueryString(params)  : "";
 
     const response = await fetch(
-        info + qs,
+        baseUrl + info + qs,
         { 
             method, 
             ...body instanceof FormData ? defaultRequestInfo : jsonRequestInfo,
             body
         });
 
-    return await response.json();
+    if (response.ok)
+        return await response.json();
+    else
+        throw new APIError(await response.json());
+}
+
+class APIError extends Error {
+    constructor(public data: any) {
+        super("API Error");
+    }
 }

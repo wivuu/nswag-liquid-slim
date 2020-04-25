@@ -1,0 +1,4 @@
+node_modules/
+output.ts
+output.js
+output.min.js

@@ -1,50 +1,26 @@
-﻿using System;
-using System.IO;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using NSwag;
-using NSwag.CodeGeneration.TypeScript;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace nswag_test
+namespace nswag_liquid_slim
 {
-    class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            var doc = await OpenApiDocument.FromFileAsync("./openapi.json");
-
-            var settings = new TypeScriptClientGeneratorSettings
-            {
-                // ClientBaseClass = "RootApi",
-                // UseGetBaseUrlMethod = true,
-                ClassName           = "{controller}",
-                Template            = TypeScriptTemplate.Fetch
-            };
-
-            settings.TypeScriptGeneratorSettings.EnumStyle =
-                NJsonSchema.CodeGeneration.TypeScript.TypeScriptEnumStyle.Enum;
-            settings.TypeScriptGeneratorSettings.TemplateDirectory = "./Templates";
-            settings.TypeScriptGeneratorSettings.TypeStyle = 
-                NJsonSchema.CodeGeneration.TypeScript.TypeScriptTypeStyle.Interface;
-
-            var generator = new TypeScriptClientGenerator(doc, settings);
-
-            var fsw = new FileSystemWatcher("Templates");
-
-            while (true)
-            {
-                Console.WriteLine("Compiling output.ts...");
-                
-                try
-                {
-                    await File.WriteAllTextAsync("output.ts", generator.GenerateFile());
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-
-                fsw.WaitForChanged(WatcherChangeTypes.Changed);
-            }
+            CreateHostBuilder(args).Build().Run();
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

@@ -1,1 +1,0 @@
-tsc --watch output.ts
