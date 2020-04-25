@@ -318,6 +318,20 @@
             "x-nullable": true
           },
           {
+            "type": "integer",
+            "name": "AccountType",
+            "in": "formData",
+            "x-schema": {
+              "$ref": "#/definitions/AccountType"
+            },
+            "x-nullable": false,
+            "enum": [
+              0,
+              1,
+              2
+            ]
+          },
+          {
             "type": "string",
             "name": "AboutMe",
             "in": "formData",
@@ -442,6 +456,20 @@
             "name": "Image.ImageData",
             "in": "formData",
             "x-nullable": true
+          },
+          {
+            "type": "integer",
+            "name": "AccountType",
+            "in": "formData",
+            "x-schema": {
+              "$ref": "#/definitions/AccountType"
+            },
+            "x-nullable": false,
+            "enum": [
+              0,
+              1,
+              2
+            ]
           },
           {
             "type": "string",
@@ -661,7 +689,8 @@
         "lastName",
         "title",
         "phone",
-        "image"
+        "image",
+        "accountType"
       ],
       "properties": {
         "id": {
@@ -693,6 +722,9 @@
         "image": {
           "$ref": "#/definitions/ImageViewModel"
         },
+        "accountType": {
+          "$ref": "#/definitions/AccountType"
+        },
         "aboutMe": {
           "type": "string",
           "maxLength": 200,
@@ -715,6 +747,20 @@
           "type": "file"
         }
       }
+    },
+    "AccountType": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "User",
+        "Moderator",
+        "Administrator"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
     },
     "ProblemDetails": {
       "type": "object",
@@ -878,8 +924,7 @@
       "type": "object",
       "required": [
         "date",
-        "temperatureC",
-        "summary"
+        "temperatureC"
       ],
       "properties": {
         "date": {

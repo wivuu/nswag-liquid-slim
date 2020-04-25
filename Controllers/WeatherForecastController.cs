@@ -61,6 +61,6 @@ namespace nswag_liquid_slim.Controllers
 
         public int TemperatureC { get; set; }
 
-        public string Summary { get; set; }
+        public string? Summary { get; set; }
     }
 }

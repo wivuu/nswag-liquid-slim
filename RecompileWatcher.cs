@@ -30,7 +30,7 @@ namespace nswag_liquid_slim
             };
 
             settings.TypeScriptGeneratorSettings.EnumStyle =
-                NJsonSchema.CodeGeneration.TypeScript.TypeScriptEnumStyle.Enum;
+                NJsonSchema.CodeGeneration.TypeScript.TypeScriptEnumStyle.StringLiteral;
             settings.TypeScriptGeneratorSettings.TemplateDirectory = "./Templates";
             settings.TypeScriptGeneratorSettings.TypeStyle = 
                 NJsonSchema.CodeGeneration.TypeScript.TypeScriptTypeStyle.Interface;

@@ -28,10 +28,19 @@ namespace nswag_liquid_slim.ViewModels.Account
         public ImageViewModel Image { get; set; }
             = new ImageViewModel();
 
+        public AccountType AccountType { get; set; }
+
         [StringLength(200)]
         public string? AboutMe { get; set; }
 
         [StringLength(200)]
         public string? CustomQuote { get; set; }
+    }
+
+    public enum AccountType
+    {
+        User,
+        Moderator,
+        Administrator
     }
 }
