@@ -31,7 +31,8 @@ type {{operation.OperationName}}Form = {
 {% endif -%}
 {% endfor -%}
 
-export class {{ Class }} {
+// @ts-ignore
+export declare class {{ Class }} {
 
 {% comment %}
     GET
@@ -47,13 +48,6 @@ static get(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or o
 {% endif -%}
 {% endfor -%}
 
-{% if has_get -%}
-/** GET {{Class}} */
-static get(info: string, params?: object): Promise<unknown> {
-    return apiBase("GET", info, params);
-}
-{% endif -%}
-
 {% comment %}
     HEAD
 {% endcomment -%}
@@ -68,12 +62,6 @@ static head(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or 
 {% endif -%}
 {% endfor -%}
 
-{% if has_head -%}
-/** HEAD {{Class}} */
-static head(info: string, params?: object): Promise<unknown> {
-    return apiBase("HEAD", info, params);
-}
-{% endif -%}
 
 {% comment %}
     DELETE
@@ -89,13 +77,6 @@ static del(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or o
 {% endif -%}
 {% endfor -%}
 
-{% if has_delete -%}
-/** DELETE {{Class}} */
-static del(info: string, params?: object): Promise<unknown> {
-    return apiBase("DELETE", info, params);
-}
-{% endif -%}
-
 {% comment %}
     PUT -- JSON
 {% endcomment -%}
@@ -109,14 +90,6 @@ static put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or o
 
 {% endif -%}
 {% endfor -%}
-
-{% if has_put_json -%}
-
-/** PUT {{Class}} */
-static put(info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("PUT", info, params, JSON.stringify(body));
-}
-{% endif -%}
 
 {% comment %}
     POST -- JSON
@@ -132,14 +105,6 @@ static post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or 
 {% endif -%}
 {% endfor -%}
 
-{% if has_post_json -%}
-
-/** POST {{Class}} */
-static post(info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("POST", info, params, JSON.stringify(body));
-}
-{% endif -%}
-
 {% comment %}
     PATCH -- JSON
 {% endcomment -%}
@@ -153,14 +118,6 @@ static patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or
 
 {% endif -%}
 {% endfor -%}
-
-{% if has_patch_json -%}
-
-/** PATCH {{Class}} */
-static patch(info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("PATCH", info, params, JSON.stringify(body));
-}
-{% endif -%}
 
 {% comment %}
     PUT -- FORM
@@ -176,14 +133,6 @@ static putForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first 
 {% endif -%}
 {% endfor -%}
 
-{% if has_put_form -%}
-
-/** PUT {{Class}} */
-static putForm(info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("PUT", info, params, getFormData(body));
-}
-{% endif -%}
-
 {% comment %}
     POST -- FORM
 {% endcomment -%}
@@ -198,13 +147,6 @@ static postForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first
 {% endif -%}
 {% endfor -%}
 
-{% if has_post_form -%}
-
-/** POST {{Class}} */
-static postForm(info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("POST", info, params, getFormData(body));
-}
-{% endif -%}
 
 {% comment %}
     PATCH -- FORM
@@ -220,14 +162,76 @@ static patchForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.firs
 {% endif -%}
 {% endfor -%}
 
+}
+
+{% endif -%}
+
+// @ts-ignore
+export const {{ Class }} = {
+
+{% if has_get -%}
+/** GET {{Class}} */
+get: function (info: string, params?: object): Promise<unknown> {
+    return apiBase("GET", info, params);
+},
+{% endif -%}
+
+{% if has_head -%}
+/** HEAD {{Class}} */
+head: function (info: string, params?: object): Promise<unknown> {
+    return apiBase("HEAD", info, params);
+},
+{% endif -%}
+
+{% if has_delete -%}
+/** DELETE {{Class}} */
+del: function (info: string, params?: object): Promise<unknown> {
+    return apiBase("DELETE", info, params);
+},
+{% endif -%}
+{% if has_put_json -%}
+
+/** PUT {{Class}} */
+put: function (info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("PUT", info, params, JSON.stringify(body));
+},
+{% endif -%}
+{% if has_post_json -%}
+
+/** POST {{Class}} */
+post: function (info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("POST", info, params, JSON.stringify(body));
+},
+{% endif -%}
+
+{% if has_patch_json -%}
+
+/** PATCH {{Class}} */
+patch: function (info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("PATCH", info, params, JSON.stringify(body));
+},
+{% endif -%}
+
+{% if has_put_form -%}
+/** PUT {{Class}} */
+putForm: function (info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("PUT", info, params, getFormData(body));
+},
+{% endif -%}
+
+{% if has_post_form -%}
+
+/** POST {{Class}} */
+postForm: function (info: string, params?: object | null, body?: object): Promise<unknown> {
+    return apiBase("POST", info, params, getFormData(body));
+},
+{% endif -%}
 {% if has_patch_form -%}
 
 /** PATCH {{Class}} */
-static patchForm(info: string, params?: object | null, body?: object): Promise<unknown> {
+patchForm: function (info: string, params?: object | null, body?: object): Promise<unknown> {
     return apiBase("PATCH", info, params, getFormData(body));
-}
+},
 {% endif -%}
 
 }
-
-{% endif -%}
