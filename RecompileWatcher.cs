@@ -18,27 +18,17 @@ namespace nswag_liquid_slim
 
         public ILogger<RecompileWatcher> Logger { get; }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        static async Task CompileFile(string input, string output, TypeScriptClientGeneratorSettings settings)
         {
-            var doc = await OpenApiDocument.FromFileAsync("./Client/openapi.json");
-
-            var settings = new TypeScriptClientGeneratorSettings
-            {
-                ClassName = "{controller}",
-                Template  = TypeScriptTemplate.Fetch,
-                UseGetBaseUrlMethod = true,
-            };
-
-            settings.TypeScriptGeneratorSettings.EnumStyle =
-                NJsonSchema.CodeGeneration.TypeScript.TypeScriptEnumStyle.StringLiteral;
-            settings.TypeScriptGeneratorSettings.TemplateDirectory = "./Templates";
-            settings.TypeScriptGeneratorSettings.TypeStyle = 
-                NJsonSchema.CodeGeneration.TypeScript.TypeScriptTypeStyle.Interface;
+            var doc = await OpenApiDocument.FromFileAsync(input);
 
             var generator = new TypeScriptClientGenerator(doc, settings);
 
-            var fsw = new FileSystemWatcher("Templates");
+            await File.WriteAllTextAsync(output, generator.GenerateFile());
+        }
 
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
             _ = Task.Run(async () => 
             {
                 while (!cancellationToken.IsCancellationRequested)
@@ -47,16 +37,32 @@ namespace nswag_liquid_slim
                     
                     try
                     {
-                        await File.WriteAllTextAsync("./Client/output.ts", generator.GenerateFile());
+                        var settings = new TypeScriptClientGeneratorSettings
+                        {
+                            ClassName           = "{controller}",
+                            Template            = TypeScriptTemplate.Fetch,
+                            UseGetBaseUrlMethod = true,
+                        };
+
+                        settings.TypeScriptGeneratorSettings.EnumStyle =
+                            NJsonSchema.CodeGeneration.TypeScript.TypeScriptEnumStyle.StringLiteral;
+                        settings.TypeScriptGeneratorSettings.TemplateDirectory = "./Templates";
+                        settings.TypeScriptGeneratorSettings.TypeStyle = 
+                            NJsonSchema.CodeGeneration.TypeScript.TypeScriptTypeStyle.Interface;
+
+                        await CompileFile("./openapi-sample.json", "./Client/output.ts", settings);
                     }
                     catch (Exception e)
                     {
                         Logger.LogError(e, "Unable to write output");
                     }
 
+                    using var fsw = new FileSystemWatcher("Templates");
                     fsw.WaitForChanged(WatcherChangeTypes.Changed);
                 }
             });
+            
+            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
