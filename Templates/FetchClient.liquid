@@ -1,4 +1,4 @@
-﻿{% if HasOperations -%}
+{% if HasOperations -%}
 
 {% if HasExtensionCode -%}
     {{ ExtensionCode }}
@@ -9,7 +9,7 @@
     PATH PARAMETER DECLARATIONS
 {% endcomment -%}
 {% if operation.PathParameters.first or operation.QueryParameters.first -%}
-type {{operation.OperationName}}Params = {
+export type {{Class}}{{operation.OperationName}}Params = {
 {% for parameter in operation.PathParameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
 {% endfor -%}
@@ -23,7 +23,7 @@ type {{operation.OperationName}}Params = {
     FORM PARAMETER DECLARATIONS
 {% endcomment %}
 {% if operation.HasFormParameters -%}
-type {{operation.OperationName}}Form = {
+export type {{operation.OperationName}}Form = {
 {% for parameter in operation.FormParameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
 {% endfor -%}
@@ -31,48 +31,17 @@ type {{operation.OperationName}}Form = {
 {% endif -%}
 {% endfor -%}
 
-// @ts-ignore
-export declare class {{ Class }} {
+export const {{ Class }} = {
 
 {% comment %}
-    GET
+    GET or HEAD or DELETE
 {% endcomment -%}
 {% assign has_get = false %}
 {% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "get" -%}
-{% assign has_get = true %}
+{% if operation.HttpMethod == "get" or operation.HttpMethod == "head" or operation.HttpMethod == "delete" -%}
 
-{% template Client.Method.Documentation -%}
-static get(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
-
-{% endif -%}
-{% endfor -%}
-
-{% comment %}
-    HEAD
-{% endcomment -%}
-{% assign has_head = false %}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "head" -%}
-{% assign has_head = true %}
-
-{% template Client.Method.Documentation -%}
-static head(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
-
-{% endif -%}
-{% endfor -%}
-
-
-{% comment %}
-    DELETE
-{% endcomment -%}
-{% assign has_delete = false %}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "delete" -%}
-{% assign has_delete = true %}
-
-{% template Client.Method.Documentation -%}
-static del(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%endif%}): Promise<{{ operation.ResultType }}>;
+    {% template Client.Method.Documentation %}
+    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%endif%}) => Promise<{{ operation.ResultType }}>,
 
 {% endif -%}
 {% endfor -%}
@@ -85,8 +54,8 @@ static del(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or o
 {% if operation.HttpMethod == "put" and operation.HasFormParameters == false -%}
 {% assign has_put_json = true -%}
 
-{% template Client.Method.Documentation -%}
-static put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+    {% template Client.Method.Documentation %}
+    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}) => Promise<{{ operation.ResultType }}>,
 
 {% endif -%}
 {% endfor -%}
@@ -99,8 +68,8 @@ static put(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or o
 {% if operation.HttpMethod == "post" and operation.HasFormParameters == false -%}
 {% assign has_post_json = true -%}
 
-{% template Client.Method.Documentation -%}
-static post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+    {% template Client.Method.Documentation %}
+    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}) => Promise<{{ operation.ResultType }}>,
 
 {% endif -%}
 {% endfor -%}
@@ -113,8 +82,8 @@ static post(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or 
 {% if operation.HttpMethod == "patch" and operation.HasFormParameters == false -%}
 {% assign has_patch_json = true -%}
 
-{% template Client.Method.Documentation -%}
-static patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%elseif operation.HasContent%}, params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{{ operation.ResultType }}>;
+    {% template Client.Method.Documentation %}
+    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}) => Promise<{{ operation.ResultType }}>,
 
 {% endif -%}
 {% endfor -%}
@@ -127,8 +96,8 @@ static patch(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or
 {% if operation.HttpMethod == "put" and operation.HasFormParameters == true -%}
 {% assign has_put_form = true -%}
 
-{% template Client.Method.Documentation -%}
-static putForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+    {% template Client.Method.Documentation %}
+    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form) => Promise<{{ operation.ResultType }}>,
 
 {% endif -%}
 {% endfor -%}
@@ -141,8 +110,8 @@ static putForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first 
 {% if operation.HttpMethod == "post" and operation.HasFormParameters == true -%}
 {% assign has_post_form = true -%}
 
-{% template Client.Method.Documentation -%}
-static postForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+    {% template Client.Method.Documentation %}
+    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form) => Promise<{{ operation.ResultType }}>,
 
 {% endif -%}
 {% endfor -%}
@@ -156,82 +125,12 @@ static postForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first
 {% if operation.HttpMethod == "patch" and operation.HasFormParameters == true -%}
 {% assign has_patch_form = true -%}
 
-{% template Client.Method.Documentation -%}
-static patchForm(info: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{operation.OperationName}}Params{%else%}, params: null{%endif%}, body: {{operation.OperationName}}Form): Promise<{{ operation.ResultType }}>;
+    {% template Client.Method.Documentation %}
+    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form) => Promise<{{ operation.ResultType }}>,
 
 {% endif -%}
 {% endfor -%}
 
-}
+};
 
 {% endif -%}
-
-// @ts-ignore
-export const {{ Class }} = {
-
-{% if has_get -%}
-/** GET {{Class}} */
-get: function (info: string, params?: object): Promise<unknown> {
-    return apiBase("GET", info, params);
-},
-{% endif -%}
-
-{% if has_head -%}
-/** HEAD {{Class}} */
-head: function (info: string, params?: object): Promise<unknown> {
-    return apiBase("HEAD", info, params);
-},
-{% endif -%}
-
-{% if has_delete -%}
-/** DELETE {{Class}} */
-del: function (info: string, params?: object): Promise<unknown> {
-    return apiBase("DELETE", info, params);
-},
-{% endif -%}
-{% if has_put_json -%}
-
-/** PUT {{Class}} */
-put: function (info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("PUT", info, params, JSON.stringify(body));
-},
-{% endif -%}
-{% if has_post_json -%}
-
-/** POST {{Class}} */
-post: function (info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("POST", info, params, JSON.stringify(body));
-},
-{% endif -%}
-
-{% if has_patch_json -%}
-
-/** PATCH {{Class}} */
-patch: function (info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("PATCH", info, params, JSON.stringify(body));
-},
-{% endif -%}
-
-{% if has_put_form -%}
-/** PUT {{Class}} */
-putForm: function (info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("PUT", info, params, getFormData(body));
-},
-{% endif -%}
-
-{% if has_post_form -%}
-
-/** POST {{Class}} */
-postForm: function (info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("POST", info, params, getFormData(body));
-},
-{% endif -%}
-{% if has_patch_form -%}
-
-/** PATCH {{Class}} */
-patchForm: function (info: string, params?: object | null, body?: object): Promise<unknown> {
-    return apiBase("PATCH", info, params, getFormData(body));
-},
-{% endif -%}
-
-}
