@@ -86,8 +86,8 @@ namespace {{ Namespace }} {
     status: number;
     headers: { [key: string]: any; };
     result: TResult;
-        
-    constructor(status: number, headers: { [key: string]: any; }, result: TResult) 
+
+    constructor(status: number, headers: { [key: string]: any; }, result: TResult)
     {
         this.status = status;
         this.headers = headers;
@@ -122,8 +122,8 @@ namespace {{ Namespace }} {
 }
 {% endif -%}
 
-type HttpMethodsWithBody = "PUT" | "POST" | "PATCH";
-type HttpMethods = "HEAD" | "GET" | "DELETE" | HttpMethodsWithBody;
+type HttpMethodsWithBody = "put" | "post" | "patch";
+type HttpMethods = "head" | "get" | "delete" | HttpMethodsWithBody;
 
 {% if UseGetBaseUrlMethod -%}
 let baseUrl = getBaseUrl("{{ BaseUrl }}");
@@ -158,7 +158,7 @@ function formatParams<T extends { [key: string]: any }>(info: string, model: T) 
         for (const m of matches) {
             const key   = m.slice(2, -1),
                   value = model[key] as any;
-            
+
             if (value !== null && value !== undefined) {
                 info = info.replace(m, "/" + encodeURIComponent("" + value));
                 delete model[key];
@@ -176,55 +176,109 @@ function formatQueryString<T extends { [key: string]: any }>(model: T) {
     let qs     = "";
 
     for (let i = 0; i < keys.length; ++i) {
-        const key   = keys[i], 
+        const key   = keys[i],
               raw   = model[key],
-              value = raw instanceof Date 
-                ? raw.toJSON() 
+              value = raw instanceof Date
+                ? raw.toJSON()
                 : raw;
-        
-        qs += (i === 0 ? "?" : "&") +
-              encodeURIComponent(key) + "=" + encodeURIComponent("" + value);
+
+        if (value !== null && value !== undefined) {
+            let encodedKey = encodeURIComponent(key);
+
+            if (Array.isArray(value))
+                for (let i = 0; i < value.length; ++i) {
+                    let value_i = value[i] instanceof Date
+                        ? value[i].toJSON()
+                        : value[i];
+
+                    qs += (qs.length === 0 ? "?" : "&") + encodedKey + "=" + encodeURIComponent("" + value_i);
+                }
+            else
+                qs += (qs.length === 0 ? "?" : "&") + encodedKey + "=" + encodeURIComponent("" + value);
+        }
     }
 
     return qs;
 }
 
-/** Return FormData */
-function getFormData<T extends { [key: string]: any }>(model?: T) {
-    const data = new FormData();
+declare interface FormDataOf<T> extends FormData {}
 
-    if (model !== undefined)
+/** Return FormData */
+export function formData<T extends { [key: string]: any }>(model?: T): FormDataOf<T> {
+    const data = new FormData();
+    
+    function formDataInner(prefix: string, model: T) {
+        if (prefix)
+            prefix = prefix + ".";
+
         for (const key of Object.keys(model)) {
             const value = model[key];
 
-            if (value !== null && value !== undefined)
-                data.append(key, value);
+            if (value !== null && value !== undefined) {
+                // TODO: Support array of objects
+                
+                if (value instanceof File)
+                    data.append(prefix + key, value, value.name);
+                else if (typeof(value) === "object" && !Array.isArray(value))
+                    formDataInner(prefix + key, value);
+                else
+                    data.append(prefix + key, value);
+            }
         }
+    }
+    
+    if (model !== undefined)
+        formDataInner("", model);
 
     return data;
 }
 
+/** Retrieve formatted URL for path */
+function getRoute(path: string, inputParams?: object | null) {
+    const params = inputParams instanceof Object ? { ...inputParams } : inputParams;
+    const info   = !!params ? formatParams(path, params) : path;
+    const qs     = !!params ? formatQueryString(params)  : "";
+
+    return baseUrl + info + qs;
+}
+
 /** API Base function */
-async function apiBase(method: HttpMethods, info: string, params?: object | null, body?: string | FormData) {
-    info     = !!params ? formatParams(info, params) : info;
-    const qs = !!params ? formatQueryString(params)  : "";
+function apiBase(method: HttpMethods, path: string, isForm?: boolean) {
 
-    const response = await fetch(
-        baseUrl + info + qs,
-        { 
-            method, 
-            ...body instanceof FormData ? defaultRequestInfo : jsonRequestInfo,
-            body
-        });
+    return async function (inputParams?: object | null, body?: any | FormData) {
+        const response = await fetch(
+            getRoute(path, inputParams),
+            {
+                method,
+                ... isForm ? defaultRequestInfo : jsonRequestInfo,
+                body: isForm
+                    ? (body instanceof FormData ? body : formData(body))
+                    : JSON.stringify(body)
+            });
 
-    if (response.ok)
-        return await response.json();
-    else
-        throw new APIError(await response.json());
+        const contentType = response.headers.get("content-type") ?? "";
+
+        if (response.ok) {
+            if (contentType.indexOf("application/json") !== -1)
+                return await response.json();
+            else if (contentType.indexOf("text/plain") !== -1)
+                return await response.text();
+                else if (response.status === 204)
+                return null;
+            else
+                return response;
+        }
+        else {
+            if (contentType.indexOf("application/problem+json") !== -1)
+                throw new APIError(response.status, response, await response.json());
+            else
+                throw new APIError(response.status, response);
+        }
+    }
 }
 
 export class APIError extends Error {
-    constructor(public data: any) {
-        super("API Error");
+    constructor(public status: number, public response: Response, public problem?: any) {
+        super(problem?.detail ?? "API Error");
     }
 }

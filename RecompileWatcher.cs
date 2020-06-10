@@ -50,7 +50,7 @@ namespace nswag_liquid_slim
                         settings.TypeScriptGeneratorSettings.TypeStyle = 
                             NJsonSchema.CodeGeneration.TypeScript.TypeScriptTypeStyle.Interface;
 
-                        await CompileFile("./openapi-sample.json", "./Client/output.ts", settings);
+                        await CompileFile("./Client/openapi.json", "./Client/output.ts", settings);
                     }
                     catch (Exception e)
                     {

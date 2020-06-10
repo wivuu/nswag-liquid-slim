@@ -8,8 +8,8 @@ setBaseUrl("http://localhost:5000");
 describe("WeatherForecast", () => {
     test('GET /WeatherForecast', async () => {
         try {
-            const data = await WeatherForecast.get("/WeatherForecast", { 
-                fromDate: new Date()
+            const data = await WeatherForecast.get({ 
+                fromDate: new Date(),
             });
             expect(data).not.toBeNull();
             expect(data[0]).not.toBeNull();
@@ -19,7 +19,7 @@ describe("WeatherForecast", () => {
         }
         catch (e) {
             if (e instanceof APIError) {
-                console.error(e.data);
+                console.error(e.message);
             }
             fail(e);
         }
@@ -27,7 +27,7 @@ describe("WeatherForecast", () => {
 
     test('POST /WeatherForecast', async () => {
         try {
-            await WeatherForecast.post("/WeatherForecast", null, { 
+            await WeatherForecast.addForecast(null, { 
                 date: new Date(),
                 temperatureC: .5,
                 summary: "OK"
@@ -42,7 +42,7 @@ describe("WeatherForecast", () => {
     });
 
     test('PUT /WeatherForecast', async () => {
-        const forecast = await WeatherForecast.put("/WeatherForecast", null, { 
+        const forecast = await WeatherForecast.updateForecast(null, { 
             date: new Date(),
             temperatureC: 5,
             summary: "OK"

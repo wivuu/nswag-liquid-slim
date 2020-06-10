@@ -1,4 +1,4 @@
-{% if HasOperations -%}
+﻿{% if HasOperations -%}
 
 {% if HasExtensionCode -%}
     {{ ExtensionCode }}
@@ -31,106 +31,51 @@ export type {{operation.OperationName}}Form = {
 {% endif -%}
 {% endfor -%}
 
-export const {{ Class }} = {
+{% comment %} 
+    DECLARE PATHS FOR ALL ROUTES
+{% endcomment %}
+declare interface I{{ Class }} {
+{% for operation in Operations | sort: HttpMethod -%}
+    {% template Client.Method.Documentation %}
+    route(path: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{Class}}{{operation.OperationName}}Params{%endif%}): string;
 
+{% endfor -%}
+{% for operation in Operations | sort: HttpMethod -%}
+
+    {% template Client.Method.Documentation %}
 {% comment %}
     GET or HEAD or DELETE
 {% endcomment -%}
-{% assign has_get = false %}
+{% if operation.HttpMethod == "get" or operation.HttpMethod == "head" or operation.HttpMethod == "delete" -%}
+    {{ operation.ActualOperationName}}({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%endif%}): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
+{% else -%}
+{% comment %}
+    PUT or POST or PATCH
+{% endcomment -%}
+    {{ operation.ActualOperationName}}{% if operation.HasFormParameters -%}
+    ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form | FormDataOf<{{operation.OperationName}}Form>): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
+    {% else -%}({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
+{% endif -%}
+
+{% endif -%}
+{% endfor -%}
+}
+
+export const {{ Class }}: I{{Class}} = {
+    route: getRoute,
+{% comment %}
+    GET or HEAD or DELETE
+{% endcomment -%}
 {% for operation in Operations | sort: HttpMethod -%}
 {% if operation.HttpMethod == "get" or operation.HttpMethod == "head" or operation.HttpMethod == "delete" -%}
-
-    {% template Client.Method.Documentation %}
-    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%endif%}) => Promise<{{ operation.ResultType }}>,
-
-{% endif -%}
-{% endfor -%}
-
+    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}"),
+{% else -%}
 {% comment %}
-    PUT -- JSON
+    PUT or POST or PATCH
 {% endcomment -%}
-{% assign has_put_json = false -%}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "put" and operation.HasFormParameters == false -%}
-{% assign has_put_json = true -%}
-
-    {% template Client.Method.Documentation %}
-    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}) => Promise<{{ operation.ResultType }}>,
-
+    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}"{% if operation.HasFormParameters %}, true{% endif %}),
 {% endif -%}
 {% endfor -%}
-
-{% comment %}
-    POST -- JSON
-{% endcomment -%}
-{% assign has_post_json = false -%}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "post" and operation.HasFormParameters == false -%}
-{% assign has_post_json = true -%}
-
-    {% template Client.Method.Documentation %}
-    {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}) => Promise<{{ operation.ResultType }}>,
-
-{% endif -%}
-{% endfor -%}
-
-{% comment %}
-    PATCH -- JSON
-{% endcomment -%}
-{% assign has_patch_json = false -%}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "patch" and operation.HasFormParameters == false -%}
-{% assign has_patch_json = true -%}
-
-    {% template Client.Method.Documentation %}
-    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}) => Promise<{{ operation.ResultType }}>,
-
-{% endif -%}
-{% endfor -%}
-
-{% comment %}
-    PUT -- FORM
-{% endcomment -%}
-{% assign has_put_form = false -%}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "put" and operation.HasFormParameters == true -%}
-{% assign has_put_form = true -%}
-
-    {% template Client.Method.Documentation %}
-    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form) => Promise<{{ operation.ResultType }}>,
-
-{% endif -%}
-{% endfor -%}
-
-{% comment %}
-    POST -- FORM
-{% endcomment -%}
-{% assign has_post_form = false -%}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "post" and operation.HasFormParameters == true -%}
-{% assign has_post_form = true -%}
-
-    {% template Client.Method.Documentation %}
-    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form) => Promise<{{ operation.ResultType }}>,
-
-{% endif -%}
-{% endfor -%}
-
-
-{% comment %}
-    PATCH -- FORM
-{% endcomment -%}
-{% assign has_patch_form = false -%}
-{% for operation in Operations | sort: HttpMethod -%}
-{% if operation.HttpMethod == "patch" and operation.HasFormParameters == true -%}
-{% assign has_patch_form = true -%}
-
-    {% template Client.Method.Documentation %}
-    {{operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}") as ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form) => Promise<{{ operation.ResultType }}>,
-
-{% endif -%}
-{% endfor -%}
-
 };
 
 {% endif -%}

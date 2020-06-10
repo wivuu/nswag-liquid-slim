@@ -12,13 +12,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^25.2.1",
-    "@types/node": "^13.13.0",
-    "jest": "^25.3.0",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^13.13.12",
+    "jest": "^25.5.4",
     "node-fetch": "^2.6.0",
-    "terser": "^4.6.11",
-    "ts-jest": "^25.4.0",
-    "typescript": "^3.8.3"
+    "terser": "^4.7.0",
+    "ts-jest": "^25.5.1",
+    "typescript": "^3.9.5"
   },
   "dependencies": {
     "es6-promise": "^4.2.8",
