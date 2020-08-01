@@ -36,8 +36,8 @@ describe("WeatherForecast", () => {
             fail("Should not have gotten here");
         }
         catch (err) {
-            expect(err.data).toBeInstanceOf(Object);
-            expect(err.data.errors).toBeTruthy();
+            expect(err).toBeInstanceOf(Error);
+            expect(err.problem).toBeTruthy();
         }
     });
 
