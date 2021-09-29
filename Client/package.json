@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc output.ts",
+    "build": "tsc",
     "postbuild": "terser --mangle --compress -- output.js > output.min.js",
     "watch": "jest --watchAll"
   },
