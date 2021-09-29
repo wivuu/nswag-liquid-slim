@@ -1,4 +1,5 @@
 node_modules/
 output.ts
 output.js
+output.test.js
 output.min.js
