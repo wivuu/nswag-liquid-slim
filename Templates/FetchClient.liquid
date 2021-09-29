@@ -23,7 +23,7 @@ export type {{Class}}{{operation.OperationName}}Params = {
     FORM PARAMETER DECLARATIONS
 {% endcomment %}
 {% if operation.HasFormParameters -%}
-export type {{operation.OperationName}}Form = {
+export type {{Class}}{{operation.OperationName}}Form = {
 {% for parameter in operation.FormParameters -%}
     {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}
 {% endfor -%}
@@ -37,7 +37,7 @@ export type {{operation.OperationName}}Form = {
 declare interface I{{ Class }} {
 {% for operation in Operations | sort: HttpMethod -%}
     {% template Client.Method.Documentation %}
-    route(path: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{Class}}{{operation.OperationName}}Params{%endif%}): string;
+    route(path: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{Class}}{{operation.OperationName}}Params, leaveParams?: boolean{%endif%}): string;
 
 {% endfor -%}
 {% for operation in Operations | sort: HttpMethod -%}
@@ -53,7 +53,7 @@ declare interface I{{ Class }} {
     PUT or POST or PATCH
 {% endcomment -%}
     {{ operation.ActualOperationName}}{% if operation.HasFormParameters -%}
-    ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{operation.OperationName}}Form | FormDataOf<{{operation.OperationName}}Form>): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
+    ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{Class}}{{operation.OperationName}}Form | FormDataOf<{{Class}}{{operation.OperationName}}Form>): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
     {% else -%}({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
 {% endif -%}
 

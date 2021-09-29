@@ -98,10 +98,7 @@ namespace {{ Namespace }} {
 {%     endfor -%}
 {% endif -%}
 {% if RequiresFileParameterInterface -%}
-{% if ExportTypes %}export {% endif %}interface FileParameter {
-    data: any;
-    fileName: string;
-}
+{% if ExportTypes %}export {% endif %}type FileParameter = File;
 
 {% endif -%}
 {% if RequiresFileResponseInterface -%}
@@ -131,10 +128,6 @@ let baseUrl = getBaseUrl("{{ BaseUrl }}");
 let baseUrl = "{{ BaseUrl }}";
 {% endif -%}
 
-export function setBaseUrl(url: string) {
-    baseUrl = url;
-}
-
 const jsonRequestInfo : RequestInit = {
     headers: {
         "Content-Type": "application/json",
@@ -148,10 +141,19 @@ const defaultRequestInfo : RequestInit = {
     }
 }
 
+export function setIncludeCredentials(include: boolean) {
+    jsonRequestInfo.credentials = include ? 'include' : undefined;
+    defaultRequestInfo.credentials = include ? 'include' : undefined;
+}
+
+export function setBaseUrl(url: string) {
+    baseUrl = url;
+}
+
 const pattern = /\/\{\w+\}/g;
 
 /** Format params string, removing {template} values and any matches from the params object */
-function formatParams<T extends { [key: string]: any }>(info: string, model: T) {
+function formatParams<T extends { [key: string]: any }>(info: string, model: T, leaveParams: boolean) {
     const matches = info.match(pattern);
 
     if (matches)
@@ -163,7 +165,7 @@ function formatParams<T extends { [key: string]: any }>(info: string, model: T) 
                 info = info.replace(m, "/" + encodeURIComponent("" + value));
                 delete model[key];
             }
-            else
+            else if (!leaveParams)
                 info = info.replace(m, "");
         }
 
@@ -207,16 +209,16 @@ declare interface FormDataOf<T> extends FormData {}
 export function formData<T extends { [key: string]: any }>(value?: T): FormDataOf<T> {
     const data = new FormData();
     
-    function formDataInner(prefix: string, value: T | undefined) {
+    function formDataInner(prefix: string, value: any) {
         if (value !== null && value !== undefined) {
             if (typeof(value) === "object") {
                 if (value instanceof File)
                     data.append(prefix, value, value.name);
                 
                 else if (Array.isArray(value)) {
-                    let i = 0;
+                    let i = -1;
                     for (let e of value)
-                        formDataInner(prefix + `[${i++}]`, e);
+                        formDataInner(prefix + `[${++i}]`, e);
                 }
                 else {
                     if (prefix)
@@ -225,6 +227,10 @@ export function formData<T extends { [key: string]: any }>(value?: T): FormDataO
                     for (const key of Object.keys(value))
                         formDataInner(prefix + key, value[key]);
                 }
+            }
+            else if (typeof(value) === "string") {
+                if (value !== "")
+                    data.append(prefix, value);
             }
             else
                 data.append(prefix, value);
@@ -237,20 +243,20 @@ export function formData<T extends { [key: string]: any }>(value?: T): FormDataO
 }
 
 /** Retrieve formatted URL for path */
-function getRoute(path: string, inputParams?: object | null) {
+function getRoute(path: string, inputParams?: object | null, leaveParams: boolean = false) {
     const params = inputParams instanceof Object ? { ...inputParams } : inputParams;
-    const info   = !!params ? formatParams(path, params) : path;
+    const info   = !!params ? formatParams(path, params, leaveParams) : path;
     const qs     = !!params ? formatQueryString(params)  : "";
 
     return baseUrl + info + qs;
 }
 
 /** API Base function */
-function apiBase(method: HttpMethods, path: string, isForm?: boolean) {
+function apiBase(method: HttpMethods, path: string, isForm?: boolean, leaveParams = false) {
 
     return async function (inputParams?: object | null, body?: any | FormData) {
         const response = await fetch(
-            getRoute(path, inputParams),
+            getRoute(path, inputParams, leaveParams),
             {
                 method,
                 ... isForm ? defaultRequestInfo : jsonRequestInfo,
@@ -266,13 +272,14 @@ function apiBase(method: HttpMethods, path: string, isForm?: boolean) {
                 return await response.json();
             else if (contentType.indexOf("text/plain") !== -1)
                 return await response.text();
-                else if (response.status === 204)
+            else if (response.status === 204)
                 return null;
             else
                 return response;
         }
         else {
-            if (contentType.indexOf("application/problem+json") !== -1)
+            if (contentType.indexOf("application/json") !== -1 ||
+                contentType.indexOf("application/problem+json") !== -1)
                 throw new APIError(response.status, response, await response.json());
             else
                 throw new APIError(response.status, response);
@@ -281,7 +288,16 @@ function apiBase(method: HttpMethods, path: string, isForm?: boolean) {
 }
 
 export class APIError extends Error {
-    constructor(public status: number, public response: Response, public problem?: { detail?: string }) {
+    constructor(
+        public status: number, 
+        public response: Response, 
+        public problem?: { 
+            detail?: string,
+            errors?: { 
+                [fieldName:string]: string[] 
+            }
+        }
+    ) {
         super(problem?.detail ?? "API Error");
     }
 }
