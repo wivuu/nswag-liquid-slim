@@ -1,10 +1,11 @@
-﻿{% if HasOperations -%}
+{% if HasOperations -%}
 
 {% if HasExtensionCode -%}
     {{ ExtensionCode }}
 {% endif -%}
 
-{% for operation in Operations | sort: HttpMethod -%}
+{% assign opListSorted = Operations | sort: HttpMethod -%}
+{% for operation in opListSorted -%}
 {% comment %}
     PATH PARAMETER DECLARATIONS
 {% endcomment -%}
@@ -35,12 +36,12 @@ export type {{Class}}{{operation.OperationName}}Form = {
     DECLARE PATHS FOR ALL ROUTES
 {% endcomment %}
 declare interface I{{ Class }} {
-{% for operation in Operations | sort: HttpMethod -%}
+{% for operation in opListSorted -%}
     {% template Client.Method.Documentation %}
     route(path: "/{{ operation.Path }}"{%if operation.PathParameters.first or operation.QueryParameters.first %}, params: {{Class}}{{operation.OperationName}}Params, leaveParams?: boolean{%endif%}): string;
 
 {% endfor -%}
-{% for operation in Operations | sort: HttpMethod -%}
+{% for operation in opListSorted -%}
 
     {% template Client.Method.Documentation %}
 {% comment %}
@@ -53,8 +54,8 @@ declare interface I{{ Class }} {
     PUT or POST or PATCH
 {% endcomment -%}
     {{ operation.ActualOperationName}}{% if operation.HasFormParameters -%}
-    ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{Class}}{{operation.OperationName}}Form | FormDataOf<{{Class}}{{operation.OperationName}}Form>): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
-    {% else -%}({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elseif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif%}>,
+    ({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%else%}params: null{%endif%}, body: {{Class}}{{operation.OperationName}}Form | FormDataOf<{{Class}}{{operation.OperationName}}Form>): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{%endif %}>,
+    {% else -%}({%if operation.PathParameters.first or operation.QueryParameters.first %}params: {{Class}}{{operation.OperationName}}Params{%elsif operation.HasContent%}params: null{%endif%}{%if operation.HasContent%}, body: {{operation.ContentParameter.Type}}{%endif%}): Promise<{%if operation.ResultType == "void" %}Response{% else %}{{ operation.ResultType }}{% endif %}>,
 {% endif -%}
 
 {% endif -%}
@@ -66,7 +67,7 @@ export const {{ Class }}: I{{Class}} = {
 {% comment %}
     GET or HEAD or DELETE
 {% endcomment -%}
-{% for operation in Operations | sort: HttpMethod -%}
+{% for operation in opListSorted -%}
 {% if operation.HttpMethod == "get" or operation.HttpMethod == "head" or operation.HttpMethod == "delete" -%}
     {{ operation.ActualOperationName}}: apiBase("{{operation.HttpMethod}}", "/{{ operation.Path }}"),
 {% else -%}
